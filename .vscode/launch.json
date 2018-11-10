@@ -1,7 +1,6 @@
 {
     "version": "0.2.0",
     "configurations": [
-    
         {
             "name": "C++ Launch (GDB)", // 配置名称，将会在启动配置的下拉菜单中显示
             "type": "cppdbg", // 配置类型，这里只能为cppdbg
@@ -9,7 +8,7 @@
             "launchOptionType": "Local", // 调试器启动类型，这里只能为Local
             "targetArchitecture": "x86", // 生成目标架构，一般为x86或x64，可以为x86, arm, arm64, mips, x64, amd64, x86_64
             "program": "${fileDirname}/${fileBasenameNoExtension}.exe", // 将要进行调试的程序的路径
-            "miDebuggerPath": "C://MinGW//bingdb.exe", // miDebugger的路径，注意这里要与MinGw的路径对应。64位系统用gdb64.exe
+            "miDebuggerPath": "gdb.exe", // miDebugger的路径，注意这里要与MinGw的路径对应。64位系统用gdb64.exe
             "args": [
                 ""
             ], // 程序调试时传递给程序的命令行参数，一般设为空即可
