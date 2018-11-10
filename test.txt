@@ -1,0 +1,7 @@
+0x0000: 308400020000 | irmovl Stack,%esp
+0x0006: 308500020000 | irmovl Stack,%ebl
+0x000c: 702c000000   | jmp main
+0x0011:              | .align 4
+                     |
+0x0014: 0a000000     |.long 0x00a
+
