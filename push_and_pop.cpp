@@ -19,11 +19,12 @@ void cons_code::push_execute(cons_code &code)
 }
 void cons_code::push_memo(cons_code &code)
 {
+    unsigned long long term=18446744073709551615+valA+1;
     for(int i=0;i!=8;i++)
     {
-        memory[valE+i]=valA%(16*16);
-        valA/=(16*16);
-    }//写回内存需要同样从用小端法
+        memory[valE+i]=term%(16*16);
+        term/=(16*16);
+    }//这样写回的负数依旧保持补码的形式
 }
 void cons_code::push_write(cons_code &code)
 {
