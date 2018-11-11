@@ -32,12 +32,9 @@ class cons_code
     int dstE;
 
     void fetch(cons_code &code);
-    void execute(cons_code &code);
-    void PCchange(cons_code &code);
     void decode(cons_code &code);
-    void write(cons_code &code);
+    void execute(cons_code &code);
     void memo(cons_code &code);
+    void write(cons_code &code);
+    void PCchange(cons_code &code);
 };
-
-
-
