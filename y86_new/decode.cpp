@@ -1,6 +1,6 @@
 #include"y86_essence.h"
 
-void cons_code::decode(cons_code &code)
+void cons_code::decode()
 {
     switch(icode)
     {

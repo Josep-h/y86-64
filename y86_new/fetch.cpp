@@ -1,6 +1,6 @@
 #include"y86_essence.h"
 
-void cons_code::fetch(cons_code &code)
+void cons_code::fetch()
 {
     icode=memory[PC]/16;
     ifun=memory[PC]%16;

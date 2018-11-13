@@ -1,6 +1,6 @@
 #include"y86_essence.h"
 
-void cons_code::PCchange(cons_code &code)
+void cons_code::PCchange()
 {
     switch(icode)
     {
@@ -21,4 +21,11 @@ void cons_code::PCchange(cons_code &code)
         case 9:
             PC=valM;break;
     }
+}
+
+int cons_code::PredictPC()
+{
+    if(icode==8)
+        return valC;
+    else return valP;
 }
