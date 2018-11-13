@@ -9,7 +9,7 @@ int PC,state;//地址与状态值,PC本质上是使用一个map去维护的，�
 //PC相当于这个数组的下标
 int memory[200000];//模拟内存，里面有模拟的栈和模拟的指令集，所有的数字都不超过16*16以使每一个数组中的元素模拟都一个字节
 //里面的数字都以8个字节为一个单位存储。刚好和命令的最长长度相同。并且保留补码的形式
-cons_code f,d,e,m,w;//fetch阶段等的数据保留
+
 class cons_code
 {
 //这是一个命令，里面包含有流水线的每一步需要的值
@@ -21,6 +21,7 @@ class cons_code
     int rB;
     int valP;//PC的更新值
     int dstE;
+    int srcA;
     bool Cnd;
     long long valC;//从命令取出的值
     int stat;
@@ -37,7 +38,7 @@ class cons_code
     void PCchange();
     int PredictPC();
 };
-
+cons_code f,d,e,m,w;//fetch阶段等的数据保留
 //一下四个是流水线寄存器
 class Wreg{
     public:

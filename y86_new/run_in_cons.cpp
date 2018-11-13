@@ -23,14 +23,17 @@ void run_in_cons(int r)
         }
         if(r>1)//execute
         {
-            
+            e.icode=ereg.icode;e.valC=ereg.valC;e.valA=ereg.valA;e.valB=ereg.valB;e.dstE=ereg.dstE;
+            e.execute();
         }
         if(r>2)//memo
         {
-
+            m.icode=mreg.icode;m.valE=mreg.valE;m.valA=mreg.valA;
+            m.memo();
         }
         if(r>3)//write
         {
-
+            w.icode=wreg.icode;w.valE=wreg.valE;w.valE=wreg.valE;
+            w.write();
         }
 }

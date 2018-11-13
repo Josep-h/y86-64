@@ -8,7 +8,6 @@
 #include"decoder.cpp"
 #include"run_in_cons.cpp"
 #include"run_in_reg.cpp"
-#include"SelectPC.cpp"
 #include"middle.cpp"
 
 #include<string>

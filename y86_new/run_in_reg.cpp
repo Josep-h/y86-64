@@ -27,7 +27,7 @@ void run_in_reg()
 
     //memory
     //来自上一个寄存器
-    wreg.icode=m.icode;wreg.valE=mreg.valE;wreg.dstE=mreg.dstE;wreg.dstM=mreg.dstM;
+    wreg.icode=mreg.icode;wreg.valE=mreg.valE;wreg.dstE=mreg.dstE;wreg.dstM=mreg.dstM;
     //来自cons_code
     wreg.valM=w.valM;
 

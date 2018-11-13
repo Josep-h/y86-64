@@ -25,8 +25,8 @@ void cons_code::memo()
         case 8:
             for(int i=0;i!=8;i++)
             {
-                memory[valE+i]=valP&255;
-                valP>>8;
+                memory[valE+i]=valA&255;
+                valA>>8;
             }//这样写回的负数依旧保持补码的形式
             reg[4]=valE;break;
     }
