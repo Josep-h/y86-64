@@ -2,6 +2,8 @@
 
 void cons_code::execute()
 {
+    icode=ereg.icode;valC=ereg.valC;valA=ereg.valA;
+    valB=ereg.valB;dstE=ereg.dstE;
     switch(icode)
     {
         case 2:

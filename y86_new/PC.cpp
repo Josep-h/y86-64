@@ -1,31 +1,21 @@
 #include"y86_essence.h"
 
-void cons_code::PCchange()
+void SelectPC()
 {
-    switch(icode)
-    {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 10:
-        case 11:
-            PC=valP;break;
-        case 7:
-            PC=Cnd?valC:valP;break;
-        case 8:
-            PC=valC;break;
-        case 9:
-            PC=valM;break;
-    }
+    //jxx
+    if(mreg.icode==7&&!mreg.Cnd)
+        f_pc=mreg.valA;
+    //ret
+    else if(wreg.icode==9)
+        f_pc=wreg.valM;
+    else f_pc=F_predPC;
+
+    PC=f_pc;
 }
 
-int cons_code::PredictPC()
+void cons_code::f_pred()
 {
-    if(icode==8)
-        return valC;
-    else return valP;
+    if(icode==8||icode==7)//jxx||call
+        f_predPC=f.valC;
+    else f_predPC=f.valP;
 }

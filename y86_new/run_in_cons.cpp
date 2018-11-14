@@ -8,29 +8,12 @@
 
 void run_in_cons(int r)
 {
-    //fetch
+        //fetch
         f.fetch();//取指阶段完成
-        predictPC=f.PredictPC();//获得预计的PC值
+        f.f_pred();//获得预计的PC值并存入f_predPC
         
-        //deocde
-        if(r>0)
-        {
-            d.rA=dreg.rA;d.rB=dreg.rB;d.icode=dreg.icode;
-            d.valP=dreg.valP;
-            d.decode();
-            if(d.icode==8||d.icode==7)
-            d.valA=dreg.valP;
-        }
-        if(r>1)//execute
-        {
-            
-        }
-        if(r>2)//memo
-        {
-
-        }
-        if(r>3)//write
-        {
-
-        }
+        d.decode();    
+        e.execute();
+        m.memo();
+        w.write();
 }
