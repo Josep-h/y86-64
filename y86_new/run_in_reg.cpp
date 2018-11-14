@@ -10,9 +10,9 @@ void run_in_reg()
 {
     if(F_stall==1);
     else
-    PC=f_pc;
+        F_predPC=f_predPC;
     
-    F_predPC=f_predPC;//获得新的地址值
+    PC=f_pc;//获得新的地址值
     //fetch to decode
     if(dreg.bubble==1)
     {
@@ -42,15 +42,15 @@ void run_in_reg()
     //execute to memory
     if(mreg.bubble==1)
     {
-        ereg.icode=1;
+        mreg.icode=1;
     }
     else if(mreg.stall==1);
     else
     //来自上一个寄存器
     {mreg.icode=ereg.icode;mreg.dstM=ereg.dstM;mreg.valA=ereg.valA;
     //来自cons_code
-    mreg.valE=m.valE;mreg.dstE=m.dstE;
-    mreg.Cnd=m.Cnd;}
+    mreg.valE=e.valE;mreg.dstE=e.dstE;
+    mreg.Cnd=e.Cnd;}
 
     //memory to write
     if(wreg.bubble==1)
@@ -63,7 +63,7 @@ void run_in_reg()
     {wreg.icode=mreg.icode;wreg.valE=mreg.valE;
     wreg.dstE=mreg.dstE;wreg.dstM=mreg.dstM;
     //来自cons_code
-    wreg.valM=w.valM;}
+    wreg.valM=m.valM;}
 
     //write
     //来自上一个寄存器,把值写回

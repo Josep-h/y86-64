@@ -2,6 +2,7 @@
 
 void cons_code::write()
 {
+    icode=wreg.icode;valE=wreg.valE;valM=wreg.valM;
     switch(icode)
     {
         case 2:

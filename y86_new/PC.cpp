@@ -9,6 +9,8 @@ void SelectPC()
     else if(wreg.icode==9)
         f_pc=wreg.valM;
     else f_pc=F_predPC;
+
+    PC=f_pc;
 }
 
 void cons_code::f_pred()

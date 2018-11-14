@@ -6,23 +6,20 @@ long long reg[16];//寄存器数组，下标代表寄存器的名字，比如0�
 //这样的代价是，当你从memory中取值或者往memory中写值时需要将reg中的值转化为8字节的形式
 int PC,state,f_pc,F_predPC=0,f_predPC,F_stall;//地址与状态值,PC本质上是使用一个map去维护的，对于每一个PC值存在一个与之对应的cons_code结构
 //PC相当于这个数组的下标
-int ZF,SF,OF;
+int ZF,SF,OF,set_cc;
 int memory[200000];//模拟内存，里面有模拟的栈和模拟的指令集，所有的数字都不超过16*16以使每一个数组中的元素模拟都一个字节
 //里面的数字都以8个字节为一个单位存储。刚好和命令的最长长度相同。并且保留补码的形式
-
+int AOK=1,HLT=2,ADR=3,INS=4; 
 class cons_code
 {
 //这是一个命令，里面包含有流水线的每一步需要的值
 //流水线的每一步需要传递的就是这一个值
     public:
-    int ifun;
-    int icode;
-    int rA;
-    int rB;
+    int ifun;int icode;
+    int rA;int rB;
     int valP;//PC的更新值
-    int dstE;
-    int srcA;
-    int srcB;
+    int dstE;int dstM;
+    int srcA;int srcB;
     bool Cnd;
     long long valC;//从命令取出的值
     int stat;

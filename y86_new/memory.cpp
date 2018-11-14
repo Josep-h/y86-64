@@ -2,6 +2,7 @@
 
 void cons_code::memo()
 {
+    icode=mreg.icode;valE=mreg.valE;valA=mreg.valA;
     switch(icode)
     {
         case 4:
@@ -13,7 +14,8 @@ void cons_code::memo()
                 sum*=16*16;
                 sum+=memory[i];
             }
-            valM=sum;break;
+            valM=sum;
+            break;
         case 5:
         case 10:
             for(int i=0;i!=8;i++)
