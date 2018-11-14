@@ -8,9 +8,9 @@
 
 void run_in_cons(int r)
 {
-    //fetch
+        //fetch
         f.fetch();//取指阶段完成
-        predictPC=f.PredictPC();//获得预计的PC值
+        f.f_pred();//获得预计的PC值并存入f_predPC
         
         //deocde
         if(r>0)
@@ -20,10 +20,18 @@ void run_in_cons(int r)
             d.decode();
             if(d.icode==8||d.icode==7)
             d.valA=dreg.valP;
+            
+            //确定srcA
+            if(d.icode==2||d.icode==4||d.icode==6||d.icode==10)
+            d.srcA=dreg.rA;
+            else if(d.icode==11||d.icode==9)
+            d.srcA=4;//rsp
+            else d.srcA=15;//没有寄存器
         }
         if(r>1)//execute
         {
-            e.icode=ereg.icode;e.valC=ereg.valC;e.valA=ereg.valA;e.valB=ereg.valB;e.dstE=ereg.dstE;
+            e.icode=ereg.icode;e.valC=ereg.valC;e.valA=ereg.valA;
+            e.valB=ereg.valB;e.dstE=ereg.dstE;
             e.execute();
         }
         if(r>2)//memo

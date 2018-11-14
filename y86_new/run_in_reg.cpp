@@ -7,6 +7,8 @@
         
 void run_in_reg()
 {
+    PC=f_pc;
+    F_predPC=f_predPC;//获得新的地址值
     //fetch
     dreg.icode=f.icode;dreg.ifun=f.ifun;dreg.rA=f.rA;
     dreg.rB=f.rB;dreg.valC=f.valC;dreg.valP=f.valP;//这里把上一个值交给流水线寄存器
@@ -16,7 +18,7 @@ void run_in_reg()
     ereg.icode=dreg.icode;ereg.ifun=dreg.ifun;ereg.valC=dreg.valC;
     //来自于cons_code
     ereg.valA=d.valA;ereg.valB=d.valB;ereg.dstM=ereg.dstE=d.rB;
-    ereg.scrA=d.rA;ereg.scrB=d.rB;
+    ereg.scrA=d.srcA;ereg.scrB=d.rB;
 
     //execute
     //来自上一个寄存器
@@ -27,7 +29,8 @@ void run_in_reg()
 
     //memory
     //来自上一个寄存器
-    wreg.icode=mreg.icode;wreg.valE=mreg.valE;wreg.dstE=mreg.dstE;wreg.dstM=mreg.dstM;
+    wreg.icode=mreg.icode;wreg.valE=mreg.valE;
+    wreg.dstE=mreg.dstE;wreg.dstM=mreg.dstM;
     //来自cons_code
     wreg.valM=w.valM;
 
