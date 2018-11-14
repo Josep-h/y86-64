@@ -27,6 +27,7 @@ void run_in_cons(int r)
             else if(d.icode==11||d.icode==9)
             d.srcA=4;//rsp
             else d.srcA=15;//没有寄存器
+            d.srcB=dreg.rB;
         }
         if(r>1)//execute
         {

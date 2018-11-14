@@ -9,6 +9,7 @@
 #include"run_in_cons.cpp"
 #include"run_in_reg.cpp"
 #include"middle.cpp"
+#include"bubble_stall_set.cpp"
 
 #include<string>
 
@@ -32,7 +33,13 @@ int main()
         //转发的部分
         middle();
 
+        //特殊情况控制
+        //设置异常状态值
+        bubble_stall_set();
+        
+        //时钟上升沿触发
         //这一部分是将上一个流水寄存器和cons_code中的值写入熏成二流水寄存器
+        //泡泡和生效的结算也在这里
         run_in_reg();
         r++;//一轮结束
     }
