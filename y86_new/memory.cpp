@@ -2,6 +2,7 @@
 
 void cons_code::memo()
 {
+    icode=mreg.icode;valE=mreg.valE;valA=mreg.valA;
     switch(icode)
     {
         case 4:
@@ -13,7 +14,8 @@ void cons_code::memo()
                 sum*=16*16;
                 sum+=memory[i];
             }
-            valM=sum;break;
+            valM=sum;
+            break;
         case 5:
         case 10:
             for(int i=0;i!=8;i++)
@@ -25,8 +27,8 @@ void cons_code::memo()
         case 8:
             for(int i=0;i!=8;i++)
             {
-                memory[valE+i]=valP&255;
-                valP>>8;
+                memory[valE+i]=valA&255;
+                valA>>8;
             }//这样写回的负数依旧保持补码的形式
             reg[4]=valE;break;
     }
