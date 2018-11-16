@@ -38,9 +38,7 @@ int main()
         bubble_stall_set();
         
         //时钟上升沿触发
-        //这一部分是将上一个流水寄存器和cons_code中的值写入熏成二流水寄存器
-        //泡泡和生效的结算也在这里
-        wreg.write();
         run_in_reg();
+        wreg.write();
     }
 }

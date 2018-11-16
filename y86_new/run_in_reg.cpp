@@ -11,7 +11,7 @@ void run_in_reg()
     if(freg.stall==1);
     else
         freg.predPC=f.predPC;
-    PC=freg.predPC;//获得新的地址值
+    //获得新的地址值
     //fetch to decode
     
     if(dreg.stall==1);//什么也不做

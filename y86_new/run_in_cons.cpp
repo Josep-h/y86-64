@@ -11,9 +11,8 @@ void run_in_cons(int r)
         //fetch
         f.fetch();//取指阶段完成
         f.f_pred();//获得预计的PC值并存入f_predPC
-        
         d.decode();    
         e.execute();
         m.memo();
-        wreg.write();
+        
 }

@@ -79,11 +79,3 @@ class Dreg{
     bool bubble,stall;
 }dreg;
 //这个函数用来清零所有的状态值
-void clearF()
-{
-    freg.stall=0;
-    dreg.bubble=dreg.stall=0;
-    mreg.bubble=mreg.stall=0;
-    ereg.bubble=ereg.stall=0;
-    wreg.bubble=mreg.stall=0;
-}
