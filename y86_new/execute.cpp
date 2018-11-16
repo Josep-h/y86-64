@@ -6,7 +6,7 @@ void E::execute()
     valB=ereg.valB;dstE=ereg.dstE;set_cc=(icode==OP);
     switch(icode)
     {
-        case 2:
+        case RR:
             valE=valA;
             switch(ifun)
             {
@@ -20,12 +20,12 @@ void E::execute()
                 default: Cnd=0;
             }
             break;
-        case 3:
+        case IR:
             valE=valC;break;
-        case 4:
-        case 5:
+        case RM:
+        case MR:
             valE=valC+valB;break;
-        case 6:
+        case OP:
             if(ifun==0)
             {
                 valE=valB+valA;
@@ -43,17 +43,18 @@ void E::execute()
                 valE=valB^valA;
             }
     
-            if(valE==0)
-                ZF=1;
+            if(valE==0) ZF=1;
             else ZF=0;
-            if(valE<0)
-                SF=1;
+            
+            if(valE<0) SF=1;
             else SF=0;
+            
             if((valB<0==valA<0)&&(valE<0!=valB<0))
                 OF=1;
             else OF=0;
+            
             break;
-        case 7:
+        case JXX:
             switch(ifun)
             {
                 case 0: Cnd=1; break;
@@ -66,11 +67,11 @@ void E::execute()
                 default: Cnd=0;
             }
             break;
-        case 8:
-        case 10:
+        case CALL:
+        case PUSH:
             valE=valB-8;break;
-        case 9:
-        case 11:
+        case RET:
+        case POP:
             valE=valB+8;break;
     }
 }

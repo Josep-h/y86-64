@@ -6,47 +6,41 @@ void D::decode()
     valP=dreg.valP;
     switch(icode)
     {
-        case 0:
-        case 1:break;
-        case 2:
+        case RR:
             valA=reg[rA];
             srcA=dreg.rA;break;
-        case 3:
-            dstE=dreg.rB;
-            break; 
-        case 4:
+        case IR:
+            dstE=dreg.rB;break; 
+        case RM:
             valB=reg[rB];
             srcA=dreg.rA;srcB=rB;
-            dstE=dreg.rB;
-            break;
-        case 5:
+            dstE=dreg.rB;break;
+        case MR:
             valA=reg[rA];srcB=rB;
             valB=reg[rB];
-            dstM=rA;
-            break;
-        case 6:
+            dstM=rA;break;
+        case OP:
             valA=reg[rA];
             valB=reg[rB];
             srcA=dreg.rA;srcB=rB;
-            dstE=dreg.rB;
-            break;
-        case 7:
+            dstE=dreg.rB;break;
+        case JXX:
             valA=dreg.valP;break;
-        case 8:
+        case CALL:
             valB=reg[4];valA=dreg.valP;
             srcB=4;
             dstE=4;break;
-        case 9:
+        case RET:
             valA=reg[4];
             valB=reg[4];
             srcA=4;srcB=4;
             dstE=4;break;
-        case 10:
+        case PUSH:
             valA=reg[rA];
             valB=reg[4];
             srcA=dreg.rA;srcB=4;
             dstE=4;break;
-        case 11:
+        case POP:
             valA=reg[4];
             valB=reg[4];
             srcA=4;srcB=4;

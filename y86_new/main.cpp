@@ -44,7 +44,7 @@ int main()
     PC=0;
     freg.predPC=0;//初始化
     decoder();
-    reg[4]=10000;
+    reg[RSP]=10000;
     while(1)
     {
         //SelectPC

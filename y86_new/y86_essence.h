@@ -10,7 +10,7 @@ long long reg[16];//寄存器
 int PC,Stat;
 //PC相当于这个数组的下标
 
-bool imem_error,mem_read;//错误码
+bool imem_error,mem_read,instr_valid;//错误码
 
 int memory[200000];
 //里面的数字都以8个字节为一个单位存储。刚好和命令的最长长度相同。并且保留补码的形式

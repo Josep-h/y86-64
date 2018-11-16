@@ -1,24 +1,29 @@
 #include"y86_essence.h"
 
+bool valid(int i)
+{
+    return i<16&&i>=0;
+}
+
 void F::fetch()
 {
     icode=memory[PC]/16;
     ifun=memory[PC]%16;
-    if(icode<16&&icode>=0)
-    {instr_valid=1;}
-    else{instr_valid=0;
+    instr_valid=icode<13&&icode>=0&&ifun<4&&ifun>=0;
+    int imem_error;
     switch(icode)
     {
-        case 2:
-        case 6:
-        case 10:
-        case 11:
+        case OP:
+        case PUSH:
+        case POP:
             rA=memory[PC+1]/16;
             rB=memory[PC+1]%16;
-            valP=PC+2;break;
-        case 3:
-        case 4:
-        case 5:
+            valP=PC+2;
+            imem_error=!(valid(rA)&&valid(rB));
+            break;
+        case IR:
+        case RM:
+        case MR:
             rA=memory[PC+1]/16;
             rB=memory[PC+1]%16;
             long long sum=0;
@@ -28,9 +33,11 @@ void F::fetch()
                 sum+=memory[i];
             }
             valC=sum;
-            valP=PC+10;break;
-        case 7:
-        case 8:
+            valP=PC+10;
+            imem_error=!(valid(rA)&&valid(rB));
+            break;
+        case JXX:
+        case CALL:
             long long sum=0;
             for(int i=PC+8;i!=PC;i--)
             {
@@ -39,13 +46,10 @@ void F::fetch()
             }
             valC=sum;
             valP=PC+9;break;
-        case 0:
-        case 1:
-        case 9:break;
-    }
+        case RET:break;
     }
     if(imem_error) stat=ADR;
     else if(!instr_valid) stat=INS;
     else if(icode==HALT) stat=HLT;
-    else stat=0;
+    else stat=AOK;
 }

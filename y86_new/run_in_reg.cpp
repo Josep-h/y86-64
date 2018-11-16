@@ -8,53 +8,50 @@
         
 void run_in_reg()
 {
-    if(freg.stall==1);
+    if(freg.stall);
     else
         freg.predPC=f.predPC;
 
-
     //fetch to decode
-    if(dreg.stall==1);//什么也不做
-    else if(dreg.bubble==1) dreg.icode=1;
+    if(dreg.stall);//什么也不做
+    else if(dreg.bubble) dreg.icode=1;
     else {
         dreg.icode=f.icode;dreg.ifun=f.ifun;dreg.rA=f.rA;
         dreg.rB=f.rB;dreg.valC=f.valC;dreg.valP=f.valP;//这里把上一个值交给流水线寄存器
     }
 
-
     //decode to execute
-    if(ereg.bubble==1) ereg.icode=1;
-    else if(ereg.stall==1);//什么也不做
+    if(ereg.bubble) ereg.icode=1;
+    else if(ereg.stall);//什么也不做
     else
     //来自于上一个寄存器
-    {ereg.icode=dreg.icode;ereg.ifun=dreg.ifun;ereg.valC=dreg.valC;
+    {ereg.stat=dreg.stat;ereg.icode=dreg.icode;ereg.ifun=dreg.ifun;
+    ereg.valC=dreg.valC;
     //来自于cons_code
     ereg.valA=d.valA;ereg.valB=d.valB;ereg.dstM=ereg.dstE=d.rB;
     ereg.scrA=d.srcA;ereg.scrB=d.rB;
-    ereg.dstE=dreg.rB;ereg.dstM=dreg.rA;}
-
+    ereg.dstE=d.dstE;ereg.dstM=d.dstM;}
 
     //execute to memory
-    if(mreg.bubble==1) mreg.icode=1;
-    else if(mreg.stall==1);
+    if(mreg.bubble) mreg.icode=1;
+    else if(mreg.stall);
     else
     //来自上一个寄存器
-    {mreg.icode=ereg.icode;mreg.dstM=ereg.dstM;mreg.valA=ereg.valA;
+    {mreg.stat=ereg.stat;mreg.icode=ereg.icode;
+    mreg.dstM=ereg.dstM;mreg.valA=ereg.valA;
     //来自cons_code
     mreg.valE=e.valE;mreg.dstE=e.dstE;
     mreg.Cnd=e.Cnd;}
 
-
     //memory to write
-    if(wreg.bubble==1) wreg.icode=1;
-    else if(wreg.stall==1);
+    if(wreg.bubble) wreg.icode=1;
+    else if(wreg.stall);
     else
     //来自上一个寄存器
     {wreg.icode=mreg.icode;wreg.valE=mreg.valE;
     wreg.dstE=mreg.dstE;wreg.dstM=mreg.dstM;
     //来自cons_code
-    wreg.valM=m.valM;}
-
+    wreg.stat=m.stat;wreg.valM=m.valM;}
 
     //write
     reg[wreg.dstE]=wreg.valE;

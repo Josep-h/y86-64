@@ -5,9 +5,9 @@ void M::memo()
     icode=mreg.icode;valE=mreg.valE;valA=mreg.valA;
     switch(icode)
     {
-        case 4:
-        case 9:
-        case 11:
+        case RM:
+        case RET:
+        case POP:
             long long sum=0;
             for(int i=valE+7;i!=valE-1;i--)
             {
@@ -16,21 +16,23 @@ void M::memo()
             }
             valM=sum;
             break;
-        case 5:
-        case 10:
+        case MR:
+        case PUSH:
             for(int i=0;i!=8;i++)
             {
                 memory[valE+i]=valA&255;
                 valA>>8;
             }//这样写回的负数依旧保持补码的形式
             break;
-        case 8:
+        case CALL:
             for(int i=0;i!=8;i++)
             {
                 memory[valE+i]=valA&255;
                 valA>>8;
             }//这样写回的负数依旧保持补码的形式
-            reg[4]=valE;break;
+            reg[RSP]=valE;break;
+        case NOP:
+        case HALT:;
     }
     if(deme_error) stat=ADR;
     else stat=mreg.stat;
