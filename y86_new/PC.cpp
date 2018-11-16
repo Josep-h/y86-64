@@ -3,19 +3,18 @@
 void SelectPC()
 {
     //jxx
-    if(mreg.icode==7&&!mreg.Cnd)
-        f_pc=mreg.valA;
+    if(mreg.icode==JXX&&!mreg.Cnd)
+        PC=mreg.valA;
     //ret
-    else if(wreg.icode==9)
-        f_pc=wreg.valM;
-    else f_pc=F_predPC;
+    else if(wreg.icode==RET)
+        PC=wreg.valM;
 
-    PC=f_pc;
+    else PC=freg.predPC;
 }
 
-void cons_code::f_pred()
+void F::f_pred()
 {
-    if(icode==8||icode==7)//jxx||call
-        f_predPC=f.valC;
-    else f_predPC=f.valP;
+    if(icode==CALL||icode==JXX)
+        f.predPC=f.valC;
+    else f.predPC=f.valP;
 }

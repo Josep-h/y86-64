@@ -1,6 +1,6 @@
 #include"y86_essence.h"
 
-void cons_code::write()
+void Wreg::write()
 {
     icode=wreg.icode;valE=wreg.valE;valM=wreg.valM;
     switch(icode)

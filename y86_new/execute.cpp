@@ -1,9 +1,9 @@
 #include"y86_essence.h"
 
-void cons_code::execute()
+void E::execute()
 {
     icode=ereg.icode;valC=ereg.valC;valA=ereg.valA;
-    valB=ereg.valB;dstE=ereg.dstE;
+    valB=ereg.valB;dstE=ereg.dstE;set_cc=(icode==OP);
     switch(icode)
     {
         case 2:

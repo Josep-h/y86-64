@@ -8,17 +8,17 @@
         
 void run_in_reg()
 {
-    if(F_stall==1);
+    if(freg.stall==1);
     else
-        F_predPC=f_predPC;
-    
-    PC=f_pc;//获得新的地址值
+        freg.predPC=f.predPC;
+    PC=freg.predPC;//获得新的地址值
     //fetch to decode
-    if(dreg.bubble==1)
+    
+    if(dreg.stall==1);//什么也不做
+    else if(dreg.bubble==1)
     {
         dreg.icode=1;
     }
-    else if(dreg.stall==1);//什么也不做
     else 
     {
         dreg.icode=f.icode;dreg.ifun=f.ifun;dreg.rA=f.rA;

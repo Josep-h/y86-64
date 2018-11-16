@@ -1,6 +1,6 @@
 #include"y86_essence.h"
 
-void cons_code::memo()
+void M::memo()
 {
     icode=mreg.icode;valE=mreg.valE;valA=mreg.valA;
     switch(icode)
@@ -32,4 +32,6 @@ void cons_code::memo()
             }//这样写回的负数依旧保持补码的形式
             reg[4]=valE;break;
     }
+    if(deme_error) stat=ADR;
+    else stat=mreg.stat;
 }

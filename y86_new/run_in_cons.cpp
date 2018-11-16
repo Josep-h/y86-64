@@ -15,5 +15,5 @@ void run_in_cons(int r)
         d.decode();    
         e.execute();
         m.memo();
-        w.write();
+        wreg.write();
 }

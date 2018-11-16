@@ -1,9 +1,12 @@
 #include"y86_essence.h"
 
-void cons_code::fetch()
+void F::fetch()
 {
     icode=memory[PC]/16;
     ifun=memory[PC]%16;
+    if(icode<16&&icode>=0)
+    {instr_valid=1;}
+    else{instr_valid=0;
     switch(icode)
     {
         case 2:
@@ -40,4 +43,9 @@ void cons_code::fetch()
         case 1:
         case 9:break;
     }
+    }
+    if(imem_error) stat=ADR;
+    else if(!instr_valid) stat=INS;
+    else if(icode==HALT) stat=HLT;
+    else stat=0;
 }

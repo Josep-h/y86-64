@@ -17,11 +17,10 @@ using namespace std;
 
 int main()
 {
-    F_predPC=0;
-    decoder();//读入文件进入内存，从零开始是指令
-    PC=0;//初始化
-    reg[4]=10000;//设定一个栈的起始位置
-    int r=0;
+    PC=0;
+    freg.predPC=0;//初始化
+    decoder();
+    reg[4]=10000;
     while(1)
     {
         //SelectPC
@@ -41,8 +40,7 @@ int main()
         //时钟上升沿触发
         //这一部分是将上一个流水寄存器和cons_code中的值写入熏成二流水寄存器
         //泡泡和生效的结算也在这里
+        wreg.write();
         run_in_reg();
-
-        r++;//一轮结束
     }
 }

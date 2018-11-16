@@ -1,6 +1,6 @@
 #include"y86_essence.h"
 
-void cons_code::decode()
+void D::decode()
 {
     rA=dreg.rA;rB=dreg.rB;icode=dreg.icode;
     valP=dreg.valP;
@@ -52,4 +52,7 @@ void cons_code::decode()
             srcA=4;srcB=4;
             dstE=4;dstM=rA;
     }
+    if(wreg.stat==BUB)
+    Stat=0;
+    else Stat=wreg.stat;
 }
