@@ -11,25 +11,19 @@ void run_in_reg()
     if(freg.stall==1);
     else
         freg.predPC=f.predPC;
-    //获得新的地址值
+
+
     //fetch to decode
-    
     if(dreg.stall==1);//什么也不做
-    else if(dreg.bubble==1)
-    {
-        dreg.icode=1;
-    }
-    else 
-    {
+    else if(dreg.bubble==1) dreg.icode=1;
+    else {
         dreg.icode=f.icode;dreg.ifun=f.ifun;dreg.rA=f.rA;
         dreg.rB=f.rB;dreg.valC=f.valC;dreg.valP=f.valP;//这里把上一个值交给流水线寄存器
     }
 
+
     //decode to execute
-    if(ereg.bubble==1)
-    {
-        ereg.icode=1;
-    }
+    if(ereg.bubble==1) ereg.icode=1;
     else if(ereg.stall==1);//什么也不做
     else
     //来自于上一个寄存器
@@ -39,11 +33,9 @@ void run_in_reg()
     ereg.scrA=d.srcA;ereg.scrB=d.rB;
     ereg.dstE=dreg.rB;ereg.dstM=dreg.rA;}
 
+
     //execute to memory
-    if(mreg.bubble==1)
-    {
-        mreg.icode=1;
-    }
+    if(mreg.bubble==1) mreg.icode=1;
     else if(mreg.stall==1);
     else
     //来自上一个寄存器
@@ -52,11 +44,9 @@ void run_in_reg()
     mreg.valE=e.valE;mreg.dstE=e.dstE;
     mreg.Cnd=e.Cnd;}
 
+
     //memory to write
-    if(wreg.bubble==1)
-    {
-        wreg.icode=1;
-    }
+    if(wreg.bubble==1) wreg.icode=1;
     else if(wreg.stall==1);
     else
     //来自上一个寄存器
@@ -65,8 +55,8 @@ void run_in_reg()
     //来自cons_code
     wreg.valM=m.valM;}
 
+
     //write
-    //来自上一个寄存器,把值写回
     reg[wreg.dstE]=wreg.valE;
     reg[wreg.dstM]=wreg.valM;
 }

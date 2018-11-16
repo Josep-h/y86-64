@@ -6,14 +6,38 @@
 #include"PC.cpp"
 #include"write.cpp"
 #include"decoder.cpp"
-#include"run_in_cons.cpp"
 #include"run_in_reg.cpp"
-#include"middle.cpp"
 #include"bubble_stall_set.cpp"
-
-#include<string>
-
 using namespace std;
+
+void run_in_cons()
+{
+        //fetch
+        f.fetch();//取指阶段完成
+        f.f_pred();//获得预计的PC值并存入f_predPC
+        d.decode();    
+        e.execute();
+        m.memo();
+}
+
+void forward()
+{
+    //decode
+    //valA
+    if(dreg.icode==8||dreg.icode==7) d.valA=dreg.valP;
+    else if(d.srcA==e.dstE) d.valA=e.valE;
+    else if(d.srcA==mreg.dstM) d.valA=m.valM;
+    else if(d.srcA==mreg.dstE) d.valA=mreg.valE;
+    else if(d.srcA==wreg.dstM) d.valA=wreg.valM;
+    else if(d.srcA==wreg.dstE) d.valA=wreg.valE;
+
+    //valB
+    if(d.srcB==e.dstE) d.valB=e.valE;
+    else if(d.srcB==mreg.dstM) d.valB=m.valM;
+    else if(d.srcB==mreg.dstE) d.valB=mreg.valE;
+    else if(d.srcB==wreg.dstM) d.valB=wreg.valM;
+    else if(d.srcB==wreg.dstE) d.valB=mreg.valE;
+}
 
 int main()
 {
@@ -26,19 +50,16 @@ int main()
         //SelectPC
         SelectPC();
 
-        //这一部分是将流水寄存器中的值取出但是并不写入下一个流水寄存器
-        //而是写到一个中间变量即cons_code中
-        run_in_cons(r);
+        //过程量
+        run_in_cons();
 
-        //转发的部分
-        middle();
+        //转发
+        forward();
 
         //特殊情况控制
-        //设置异常状态值
         bubble_stall_set();
         
-        //时钟上升沿触发
+        //时钟上升沿触发，包括寄存器的修改
         run_in_reg();
-        wreg.write();
     }
 }

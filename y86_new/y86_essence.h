@@ -57,7 +57,6 @@ class Wreg{
     int stat,icode,dstE,dstM;
     long long valE,valM;
     bool stall,bubble;
-    void write();
 }wreg;
 class Mreg{
     public:
