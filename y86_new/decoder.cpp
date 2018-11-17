@@ -7,18 +7,20 @@ using namespace std;
 int decoder()
 {
     PC=0;
-    fstream yo("C:\\cpparea\\pj_y86\\test.txt",ios::in);
+    ifstream yo("C:\\y86-64\\yo\\prog5.yo",ios::in);
     char c;
     if(!yo)
     cout<<"wrong"<<endl;
-    while((c=yo.get())!=-1)
+    while(yo.good()&&(c=yo.get())!=':');
+    while(yo.good())
     {
+        c=yo.get();
         if(c=='\n')
         continue;
         int num[21];
-        while((c=yo.get())!=':');
+        while(yo.good()&&(c=yo.get())!=':');
         int ct=0;
-        while((c=yo.get())!='|')
+        while(yo.good()&&(c=yo.get())!='|')
         {
             if(c==' ')
             continue;
@@ -29,9 +31,10 @@ int decoder()
         }
         for(int i=0;i<ct;i+=2)
         {
-            memory[PC+i]=num[i]*16+num[i+1];
+            memory[PC+i/2]=num[i]*16+num[i+1];
         }
-        PC+=(ct-1)/2;
+        PC+=ct/2;
     }
+
     return 0;
 }

@@ -1,34 +1,49 @@
 #include"y86_essence.h"
 
-void cons_code::fetch()
+bool valid(int i)
+{
+    return i<16&&i>=0;
+}
+
+void F::fetch()
 {
     icode=memory[PC]/16;
     ifun=memory[PC]%16;
+    int instr_valid=icode<13&&icode>=0;
+    if(icode==OP)
+    instr_valid=instr_valid&&(ifun<4&&ifun>=0);
+    if(icode==JXX)
+    instr_valid=instr_valid&&(ifun<7&&ifun>=0);
+    if(icode==CM)
+    instr_valid=instr_valid&&(ifun<7&&ifun>=0);
+    rA=rB=15;//先默认一个不修改的寄存器
+    int imem_error=0;long long sum=0;
     switch(icode)
     {
-        case 2:
-        case 6:
-        case 10:
-        case 11:
+        case OP:
+        case PUSH:
+        case POP:
             rA=memory[PC+1]/16;
             rB=memory[PC+1]%16;
-            valP=PC+2;break;
-        case 3:
-        case 4:
-        case 5:
+            valP=PC+2;
+            imem_error=!(valid(rA)&&valid(rB));
+            break;
+        case IR:
+        case RM:
+        case MR:
             rA=memory[PC+1]/16;
             rB=memory[PC+1]%16;
-            long long sum=0;
-            for(int i=PC+9;i!=PC+1;i--)
+            for(int i=PC+5;i!=PC+1;i--)
             {
                 sum*=16*16;
                 sum+=memory[i];
             }
             valC=sum;
-            valP=PC+10;break;
-        case 7:
-        case 8:
-            long long sum=0;
+            valP=PC+10;
+            imem_error=!(valid(rA)&&valid(rB));
+            break;
+        case JXX:
+        case CALL:
             for(int i=PC+8;i!=PC;i--)
             {
                 sum*=16*16;
@@ -36,8 +51,11 @@ void cons_code::fetch()
             }
             valC=sum;
             valP=PC+9;break;
-        case 0:
-        case 1:
-        case 9:break;
+        case RET:valP=valP+1;break;
+        case NOP:valP=valP+1;break;
     }
+    if(imem_error) stat=ADR;
+    else if(!instr_valid) stat=INS;
+    else if(icode==HALT) stat=HLT;
+    else stat=AOK;
 }

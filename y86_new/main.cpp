@@ -4,45 +4,58 @@
 #include"fetch.cpp"
 #include"memory.cpp"
 #include"PC.cpp"
-#include"write.cpp"
 #include"decoder.cpp"
-#include"run_in_cons.cpp"
 #include"run_in_reg.cpp"
-#include"middle.cpp"
 #include"bubble_stall_set.cpp"
-
-#include<string>
-
 using namespace std;
+void run_in_cons()
+{
+        //fetch
+        f.fetch();//取指阶段完成
+        f.f_pred();//获得预计的PC值并存入f_predPC
+        d.decode();    
+        e.execute();
+        m.memo();
+}
+
+void forward()
+{
+    //decode
+    //valA
+    if(dreg.icode==CALL||dreg.icode==JXX) d.valA=dreg.valP;
+    else if(d.srcA==e.dstE) d.valA=e.valE;
+    else if(d.srcA==mreg.dstM) d.valA=m.valM;
+    else if(d.srcA==mreg.dstE) d.valA=mreg.valE;
+    else if(d.srcA==wreg.dstM) d.valA=wreg.valM;
+    else if(d.srcA==wreg.dstE) d.valA=wreg.valE;
+
+    //valB
+    if(d.srcB==e.dstE) d.valB=e.valE;
+    else if(d.srcB==mreg.dstM) d.valB=m.valM;
+    else if(d.srcB==mreg.dstE) d.valB=mreg.valE;
+    else if(d.srcB==wreg.dstM) d.valB=wreg.valM;
+    else if(d.srcB==wreg.dstE) d.valB=mreg.valE;
+
+    //set_cc
+}
 
 int main()
 {
-    F_predPC=0;
-    decoder();//读入文件进入内存，从零开始是指令
-    PC=0;//初始化
-    reg[4]=10000;//设定一个栈的起始位置
-    int r=0;
+    PC=0;
+    freg.predPC=0;//初始化
+    decoder();
+    dreg.icode=wreg.icode=mreg.icode=ereg.icode=1;
+    f.icode=d.icode=e.icode=m.icode=0;
+    f.stat=dreg.stat=d.stat=e.stat=ereg.stat=m.stat=mreg.stat=wreg.stat=AOK;
+    reg[RSP]=10000;
     while(1)
     {
         //SelectPC
         SelectPC();
-
-        //这一部分是将流水寄存器中的值取出但是并不写入下一个流水寄存器
-        //而是写到一个中间变量即cons_code中
-        run_in_cons(r);
-
-        //转发的部分
-        middle();
-
-        //特殊情况控制
-        //设置异常状态值
+        run_in_cons();
+        forward();
         bubble_stall_set();
-        
-        //时钟上升沿触发
-        //这一部分是将上一个流水寄存器和cons_code中的值写入熏成二流水寄存器
-        //泡泡和生效的结算也在这里
         run_in_reg();
-
-        r++;//一轮结束
+        cout<<reg[0];
     }
 }

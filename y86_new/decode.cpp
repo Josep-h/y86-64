@@ -1,55 +1,57 @@
 #include"y86_essence.h"
 
-void cons_code::decode()
+void D::decode()
 {
-    rA=dreg.rA;rB=dreg.rB;icode=dreg.icode;
-    valP=dreg.valP;
+    dstM=15;dstE=15;//默认一个不修改的寄存器
+    rA=dreg.rA;rB=dreg.rB;
+    valP=dreg.valP;valC=dreg.valC;
+    icode=dreg.icode;ifun=dreg.ifun;stat=dreg.stat;
     switch(icode)
     {
-        case 0:
-        case 1:break;
-        case 2:
+        case RR:
             valA=reg[rA];
-            srcA=dreg.rA;break;
-        case 3:
-            dstE=dreg.rB;
-            break; 
-        case 4:
+            //dstE?
+            srcA=rA;
+            dstE=rB;break;
+        case IR:
+            dstE=rB;break; 
+        case RM:
             valB=reg[rB];
-            srcA=dreg.rA;srcB=rB;
-            dstE=dreg.rB;
+            srcA=rA;srcB=rB;
             break;
-        case 5:
-            valA=reg[rA];srcB=rB;
-            valB=reg[rB];
+        case MR:
+            srcB=rB;
             dstM=rA;
+            valB=reg[rB];
             break;
-        case 6:
+        case OP:
             valA=reg[rA];
             valB=reg[rB];
-            srcA=dreg.rA;srcB=rB;
-            dstE=dreg.rB;
-            break;
-        case 7:
+            srcA=rA;srcB=rB;
+            dstE=rB;break;
+        case JXX:
             valA=dreg.valP;break;
-        case 8:
+        case CALL:
             valB=reg[4];valA=dreg.valP;
-            srcB=4;
-            dstE=4;break;
-        case 9:
+            srcB=RSP;
+            dstE=RSP;break;
+        case RET:
             valA=reg[4];
             valB=reg[4];
-            srcA=4;srcB=4;
-            dstE=4;break;
-        case 10:
+            srcA=RSP;srcB=RSP;
+            dstE=RSP;break;
+        case PUSH:
             valA=reg[rA];
-            valB=reg[4];
-            srcA=dreg.rA;srcB=4;
-            dstE=4;break;
-        case 11:
-            valA=reg[4];
-            valB=reg[4];
-            srcA=4;srcB=4;
-            dstE=4;dstM=rA;
+            valB=reg[RSP];
+            srcA=rA;srcB=RSP;
+            dstE=RSP;break;
+        case POP:
+            valA=reg[RSP];
+            valB=reg[RSP];
+            srcA=RSP;srcB=RSP;
+            dstE=RSP;dstM=rA;
     }
+    if(wreg.stat==1)
+    Stat=0;
+    else Stat=wreg.stat;
 }

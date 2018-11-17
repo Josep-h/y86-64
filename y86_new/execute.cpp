@@ -1,12 +1,13 @@
 #include"y86_essence.h"
 
-void cons_code::execute()
+void E::execute()
 {
-    icode=ereg.icode;valC=ereg.valC;valA=ereg.valA;
-    valB=ereg.valB;dstE=ereg.dstE;
+    valA=ereg.valA;valB=ereg.valB;valC=ereg.valC;
+    icode=ereg.icode;stat=ereg.stat;ifun=ereg.ifun;
+    dstE=ereg.dstE;dstM=ereg.dstM;
     switch(icode)
     {
-        case 2:
+        case RR:
             valE=valA;
             switch(ifun)
             {
@@ -20,40 +21,30 @@ void cons_code::execute()
                 default: Cnd=0;
             }
             break;
-        case 3:
+        case IR:
             valE=valC;break;
-        case 4:
-        case 5:
+        case RM:
+        case MR:
             valE=valC+valB;break;
-        case 6:
-            if(ifun==0)
+        case OP:
+            switch(ifun) 
             {
-                valE=valB+valA;
+                case 0:valE=valB+valA;break;
+                case 1:valE=valB-valA;break;
+                case 2:valE=valB&valA;break;
+                case 3:valE=valB^valA;break;
             }
-            else if(ifun==1)
-            {
-                valE=valB-valA;
-            }
-            else if(ifun==2)
-            {
-                valE=valB&valA;
-            }
-            else if(ifun==3)
-            {
-                valE=valB^valA;
-            }
-    
-            if(valE==0)
-                ZF=1;
+            if(valE==0) ZF=1;
             else ZF=0;
-            if(valE<0)
-                SF=1;
+            
+            if(valE<0) SF=1;
             else SF=0;
+            
             if((valB<0==valA<0)&&(valE<0!=valB<0))
                 OF=1;
             else OF=0;
             break;
-        case 7:
+        case JXX:
             switch(ifun)
             {
                 case 0: Cnd=1; break;
@@ -66,11 +57,11 @@ void cons_code::execute()
                 default: Cnd=0;
             }
             break;
-        case 8:
-        case 10:
+        case CALL:
+        case PUSH:
             valE=valB-8;break;
-        case 9:
-        case 11:
+        case RET:
+        case POP:
             valE=valB+8;break;
     }
 }
