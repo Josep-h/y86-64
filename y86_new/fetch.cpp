@@ -7,8 +7,8 @@ bool valid(int i)
 
 void F::fetch()
 {
-    icode=memory[PC]/16;
-    ifun=memory[PC]%16;
+    icode=code_memory[PC]/16;
+    ifun=code_memory[PC]%16;
     int instr_valid=icode<13&&icode>=0;
     if(icode==OP)
     instr_valid=instr_valid&&(ifun<4&&ifun>=0);
@@ -23,20 +23,21 @@ void F::fetch()
         case OP:
         case PUSH:
         case POP:
-            rA=memory[PC+1]/16;
-            rB=memory[PC+1]%16;
+        case RR:
+            rA=code_memory[PC+1]/16;
+            rB=code_memory[PC+1]%16;
             valP=PC+2;
             imem_error=!(valid(rA)&&valid(rB));
             break;
         case IR:
         case RM:
         case MR:
-            rA=memory[PC+1]/16;
-            rB=memory[PC+1]%16;
+            rA=code_memory[PC+1]/16;
+            rB=code_memory[PC+1]%16;
             for(int i=PC+5;i!=PC+1;i--)
             {
                 sum*=16*16;
-                sum+=memory[i];
+                sum+=code_memory[i];
             }
             valC=sum;
             valP=PC+10;
@@ -47,12 +48,12 @@ void F::fetch()
             for(int i=PC+8;i!=PC;i--)
             {
                 sum*=16*16;
-                sum+=memory[i];
+                sum+=code_memory[i];
             }
             valC=sum;
             valP=PC+9;break;
-        case RET:valP=valP+1;break;
-        case NOP:valP=valP+1;break;
+        case RET:valP=PC+1;break;
+        case NOP:valP=PC+1;break;
     }
     if(imem_error) stat=ADR;
     else if(!instr_valid) stat=INS;

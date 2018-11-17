@@ -15,9 +15,9 @@ void E::execute()
                 case 1: Cnd=(SF^OF)|ZF;break;
                 case 2: Cnd=SF^OF;break;
                 case 3: Cnd=ZF;break;
-                case 4: Cnd=~ZF;break;
-                case 5: Cnd=~(SF^OF);break;
-                case 6: Cnd=~(SF^OF)&~ZF;break;
+                case 4: Cnd=!ZF;break;
+                case 5: Cnd=!(SF^OF);break;
+                case 6: Cnd=!(SF^OF)&!ZF;break;
                 default: Cnd=0;
             }
             break;
@@ -34,12 +34,8 @@ void E::execute()
                 case 2:valE=valB&valA;break;
                 case 3:valE=valB^valA;break;
             }
-            if(valE==0) ZF=1;
-            else ZF=0;
-            
-            if(valE<0) SF=1;
-            else SF=0;
-            
+            ZF=valE==0;
+            SF=valE<0;
             if((valB<0==valA<0)&&(valE<0!=valB<0))
                 OF=1;
             else OF=0;
@@ -51,9 +47,9 @@ void E::execute()
                 case 1: Cnd=(SF^OF)|ZF;break;
                 case 2: Cnd=SF^OF;break;
                 case 3: Cnd=ZF;break;
-                case 4: Cnd=~ZF;break;
-                case 5: Cnd=~(SF^OF);break;
-                case 6: Cnd=~(SF^OF)&~ZF;break;
+                case 4: Cnd=!ZF;break;
+                case 5: Cnd=!(SF^OF);break;
+                case 6: Cnd=!(SF^OF)&!ZF;break;
                 default: Cnd=0;
             }
             break;
