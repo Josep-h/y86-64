@@ -10,43 +10,46 @@ void D::decode()
     {
         case RR:
             valA=reg[rA];
-            srcA=dreg.rA;break;
+            //dstE?
+            srcA=rA;
+            dstE=rB;break;
         case IR:
-            dstE=dreg.rB;break; 
+            dstE=rB;break; 
         case RM:
             valB=reg[rB];
-            srcA=dreg.rA;srcB=rB;
-            dstE=dreg.rB;break;
+            srcA=rA;srcB=rB;
+            break;
         case MR:
-            valA=reg[rA];srcB=rB;
+            srcB=rB;
+            dstM=rA;
             valB=reg[rB];
-            dstM=rA;break;
+            break;
         case OP:
             valA=reg[rA];
             valB=reg[rB];
-            srcA=dreg.rA;srcB=rB;
-            dstE=dreg.rB;break;
+            srcA=rA;srcB=rB;
+            dstE=rB;break;
         case JXX:
             valA=dreg.valP;break;
         case CALL:
             valB=reg[4];valA=dreg.valP;
-            srcB=4;
-            dstE=4;break;
+            srcB=RSP;
+            dstE=RSP;break;
         case RET:
             valA=reg[4];
             valB=reg[4];
-            srcA=4;srcB=4;
-            dstE=4;break;
+            srcA=RSP;srcB=RSP;
+            dstE=RSP;break;
         case PUSH:
             valA=reg[rA];
-            valB=reg[4];
-            srcA=dreg.rA;srcB=4;
-            dstE=4;break;
+            valB=reg[RSP];
+            srcA=rA;srcB=RSP;
+            dstE=RSP;break;
         case POP:
-            valA=reg[4];
-            valB=reg[4];
-            srcA=4;srcB=4;
-            dstE=4;dstM=rA;
+            valA=reg[RSP];
+            valB=reg[RSP];
+            srcA=RSP;srcB=RSP;
+            dstE=RSP;dstM=rA;
     }
     if(wreg.stat==1)
     Stat=0;

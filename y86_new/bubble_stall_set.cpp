@@ -25,7 +25,7 @@ void bubble_stall_set()
     (ereg.icode==MR||ereg.icode==POP)&&\
     (ereg.dstM==d.srcA||ereg.dstM==d.srcB);
 /*
-    set_cc=(ereg.icode==POP)&&!(m.stat!=AOK)&&!(wreg.stat!=AOK);
+    set_cc=(ereg.icode==POP)&&(m.stat==AOK)&&(wreg.stat==AOK);
 
     mreg.bubble=m.stat!=AOK||wreg.stat!=AOK;
 

@@ -7,7 +7,7 @@ using namespace std;
 int decoder()
 {
     PC=0;
-    ifstream yo("C:\\y86-64\\yo\\prog4.yo",ios::in);
+    ifstream yo("C:\\y86-64\\yo\\prog5.yo",ios::in);
     char c;
     if(!yo)
     cout<<"wrong"<<endl;
