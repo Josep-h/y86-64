@@ -2,13 +2,15 @@
 
 void M::memo()
 {
-    icode=mreg.icode;valE=mreg.valE;valA=mreg.valA;
+    icode=mreg.icode;stat=mreg.stat;
+    valE=mreg.valE;valA=mreg.valA;
+    dstE=mreg.dstE;dstM=mreg.dstM;
+    long long sum=0;
     switch(icode)
     {
         case RM:
         case RET:
         case POP:
-            long long sum=0;
             for(int i=valE+7;i!=valE-1;i--)
             {
                 sum*=16*16;
@@ -34,6 +36,6 @@ void M::memo()
         case NOP:
         case HALT:;
     }
-    if(deme_error) stat=ADR;
+    if(0) stat=ADR;
     else stat=mreg.stat;
 }

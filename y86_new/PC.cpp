@@ -8,7 +8,6 @@ void SelectPC()
     //ret
     else if(wreg.icode==RET)
         PC=wreg.valM;
-
     else PC=freg.predPC;
 }
 

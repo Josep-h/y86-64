@@ -9,8 +9,15 @@ void F::fetch()
 {
     icode=memory[PC]/16;
     ifun=memory[PC]%16;
-    instr_valid=icode<13&&icode>=0&&ifun<4&&ifun>=0;
-    int imem_error;
+    int instr_valid=icode<13&&icode>=0;
+    if(icode==OP)
+    instr_valid=instr_valid&&(ifun<4&&ifun>=0);
+    if(icode==JXX)
+    instr_valid=instr_valid&&(ifun<7&&ifun>=0);
+    if(icode==CM)
+    instr_valid=instr_valid&&(ifun<7&&ifun>=0);
+    rA=rB=15;//先默认一个不修改的寄存器
+    int imem_error=0;long long sum=0;
     switch(icode)
     {
         case OP:
@@ -26,8 +33,7 @@ void F::fetch()
         case MR:
             rA=memory[PC+1]/16;
             rB=memory[PC+1]%16;
-            long long sum=0;
-            for(int i=PC+9;i!=PC+1;i--)
+            for(int i=PC+5;i!=PC+1;i--)
             {
                 sum*=16*16;
                 sum+=memory[i];
@@ -38,7 +44,6 @@ void F::fetch()
             break;
         case JXX:
         case CALL:
-            long long sum=0;
             for(int i=PC+8;i!=PC;i--)
             {
                 sum*=16*16;
@@ -46,7 +51,8 @@ void F::fetch()
             }
             valC=sum;
             valP=PC+9;break;
-        case RET:break;
+        case RET:valP=valP+1;break;
+        case NOP:valP=valP+1;break;
     }
     if(imem_error) stat=ADR;
     else if(!instr_valid) stat=INS;

@@ -12,22 +12,23 @@ void clearF()
 void bubble_stall_set()
 {
     clearF();
-    freg.stall=((ereg.icode==IR||ereg.icode==POP)&&(ereg.dstM==d.srcA||ereg.dstM==d.srcB)||\
-    (dreg.icode==RET||ereg.icode==RET||mreg.icode==RET));
+    freg.stall=(ereg.icode==IR||ereg.icode==POP)&&(ereg.dstM==d.srcA||ereg.dstM==d.srcB)||\
+    (dreg.icode==RET||ereg.icode==RET||mreg.icode==RET);
 
-    dreg.stall=((ereg.icode==MR||ereg.icode==POP)&&(ereg.dstM==d.srcA||ereg.dstM==d.srcB));
+    dreg.stall=(ereg.icode==MR||ereg.icode==POP)&&(ereg.dstM==d.srcA||ereg.dstM==d.srcB);
 
-    dreg.bubble=((ereg.icode==JXX&&!e.Cnd)||\
+    dreg.bubble=((ereg.icode==JXX)&&!e.Cnd)||\
     !((ereg.icode==MR||ereg.icode==POP)&&(ereg.dstM==d.srcA||ereg.dstM==d.srcB))&&\
-    (dreg.icode==RET||ereg.icode==RET||mreg.icode==RET));
+    (dreg.icode==RET||ereg.icode==RET||mreg.icode==RET);
 
     ereg.bubble=(ereg.icode==JXX&&!e.valC)||\
     (ereg.icode==MR||ereg.icode==POP)&&\
     (ereg.dstM==d.srcA||ereg.dstM==d.srcB);
-
+/*
     set_cc=(ereg.icode==POP)&&!(m.stat!=AOK)&&!(wreg.stat!=AOK);
 
     mreg.bubble=m.stat!=AOK||wreg.stat!=AOK;
 
     wreg.stall=wreg.stat!=AOK;
+    */
 }

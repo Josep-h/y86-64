@@ -1,3 +1,4 @@
+#pragma once
 #include<string>
 using namespace std;
 //常量
@@ -7,10 +8,8 @@ const int RSP=4,NONE=15;
 int ZF,SF,OF,set_cc;//条件寄存器
 long long reg[16];//寄存器
 
-int PC,Stat;
+int PC=0,Stat;
 //PC相当于这个数组的下标
-
-bool imem_error,mem_read,instr_valid;//错误码
 
 int memory[200000];
 //里面的数字都以8个字节为一个单位存储。刚好和命令的最长长度相同。并且保留补码的形式
@@ -26,16 +25,17 @@ class F{
 }f;
 class D{
     public:
-    long long icode,valP,valA,valB;
+    int icode,stat,ifun;
+    long long valP,valA,valB,valC;
     int dstM,dstE,srcA,srcB,rA,rB;
     void decode();
 }d;
 class E{
     public:
-    int icode,ifun;
+    int icode,ifun,stat;
     bool Cnd;
-    long long valC,valA,valB;
-    int dstE,valE;
+    long long valC,valA,valB,valE;
+    int dstE,dstM;
     void execute();
 }e;
 class M{
@@ -67,7 +67,8 @@ class Mreg{
 }mreg;
 class Ereg{
     public:
-    int stat,icode,ifun,dstE,dstM,scrA,scrB;
+    int stat,icode,ifun;
+    int dstE,dstM,scrA,scrB;
     long long valB,valA,valC;
     bool stall,bubble;
 }ereg;
@@ -77,4 +78,3 @@ class Dreg{
     long long valC,valP;
     bool bubble,stall;
 }dreg;
-//这个函数用来清零所有的状态值

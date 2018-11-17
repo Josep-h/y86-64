@@ -2,8 +2,9 @@
 
 void E::execute()
 {
-    icode=ereg.icode;valC=ereg.valC;valA=ereg.valA;
-    valB=ereg.valB;dstE=ereg.dstE;set_cc=(icode==OP);
+    valA=ereg.valA;valB=ereg.valB;valC=ereg.valC;
+    icode=ereg.icode;stat=ereg.stat;ifun=ereg.ifun;
+    dstE=ereg.dstE;dstM=ereg.dstM;
     switch(icode)
     {
         case RR:
@@ -26,23 +27,13 @@ void E::execute()
         case MR:
             valE=valC+valB;break;
         case OP:
-            if(ifun==0)
+            switch(ifun) 
             {
-                valE=valB+valA;
+                case 0:valE=valB+valA;break;
+                case 1:valE=valB-valA;break;
+                case 2:valE=valB&valA;break;
+                case 3:valE=valB^valA;break;
             }
-            else if(ifun==1)
-            {
-                valE=valB-valA;
-            }
-            else if(ifun==2)
-            {
-                valE=valB&valA;
-            }
-            else if(ifun==3)
-            {
-                valE=valB^valA;
-            }
-    
             if(valE==0) ZF=1;
             else ZF=0;
             
@@ -52,7 +43,6 @@ void E::execute()
             if((valB<0==valA<0)&&(valE<0!=valB<0))
                 OF=1;
             else OF=0;
-            
             break;
         case JXX:
             switch(ifun)
