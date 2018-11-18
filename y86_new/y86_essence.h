@@ -48,7 +48,7 @@ class M{
 //一下五个是流水线寄存器
 class Freg{
     public:
-    int predPC;
+    long long predPC;
     bool stall;
 }freg;
 class Wreg{

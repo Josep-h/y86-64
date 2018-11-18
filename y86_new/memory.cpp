@@ -13,7 +13,7 @@ void M::memo()
             {mem_error=1;break;}
             for(int i=7;i!=-1;i--)
             {
-                sum*=16*16;
+                sum=sum<<8;
                 sum+=memory[valE+i];
             }
             valM=sum;
@@ -24,7 +24,7 @@ void M::memo()
             {mem_error=1;break;}
             for(int i=7;i!=-1;i--)
             {
-                sum*=16*16;
+                sum=sum<<8;
                 sum+=memory[valA+i];
             }
             valM=sum;

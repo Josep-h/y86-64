@@ -34,9 +34,9 @@ void F::fetch()
         case MR:
             rA=memory[PC+1]/16;
             rB=memory[PC+1]%16;
-            for(int i=PC+5;i!=PC+1;i--)
+            for(int i=PC+9;i!=PC+1;i--)
             {
-                sum*=16*16;
+                sum=sum<<8;
                 sum+=memory[i];
             }
             valC=sum;
@@ -47,12 +47,13 @@ void F::fetch()
         case CALL:
             for(int i=PC+8;i!=PC;i--)
             {
-                sum*=16*16;
+                sum=sum<<8;
                 sum+=memory[i];
             }
             valC=sum;
             valP=PC+9;break;
-        case RET:valP=PC+1;break;
+        case RET:
+        case HALT:
         case NOP:valP=PC+1;break;
     }
     if(imem_error) stat=ADR;

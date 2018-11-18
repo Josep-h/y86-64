@@ -43,7 +43,7 @@ int decoder()
             memory[PC+i/2]=num[i]*16+num[i+1];
             //cout<<memory[PC+i/2]<<"  ";
         }
- /*       cout<<endl;*/
+        //cout<<endl;
         while(yo.good()&&(yo.get()!='\n'));
     }
     return 0;
