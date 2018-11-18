@@ -47,7 +47,7 @@ int main()
     dreg.icode=wreg.icode=mreg.icode=ereg.icode=1;
     f.icode=d.icode=e.icode=m.icode=0;
     f.stat=dreg.stat=d.stat=e.stat=ereg.stat=m.stat=mreg.stat=wreg.stat=AOK;
-    reg[RSP]=10000;
+    reg[RSP]=0;
     while(1)
     {
         //SelectPC

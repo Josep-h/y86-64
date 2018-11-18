@@ -34,9 +34,13 @@ void run_in_reg()
     if(mreg.bubble) mreg.icode=1;
     else if(mreg.stall);
     else
-    {mreg.valE=e.valE;mreg.valA=e.valA;
-    mreg.dstE=e.dstE;mreg.dstM=e.dstM;
-    mreg.Cnd=e.Cnd;mreg.icode=e.icode;mreg.stat=e.stat;}
+    {
+        mreg.valE=e.valE;mreg.valA=e.valA;
+        mreg.dstE=e.dstE;mreg.dstM=e.dstM;
+        mreg.icode=e.icode;mreg.stat=e.stat;
+        if(set_cc)
+            mreg.Cnd=e.Cnd;
+    }
 
     //memory to write
     if(wreg.bubble) wreg.icode=1;
