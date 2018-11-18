@@ -10,7 +10,6 @@ long long reg[16];//寄存器
 
 int PC=0,Stat;
 //PC相当于这个数组的下标
-int code_memory[20000];
 int memory[20000];
 //里面的数字都以8个字节为一个单位存储。刚好和命令的最长长度相同。并且保留补码的形式
 
@@ -68,7 +67,7 @@ class Mreg{
 class Ereg{
     public:
     int stat,icode,ifun;
-    int dstE,dstM,scrA,scrB;
+    int dstE,dstM,srcA,srcB;
     long long valB,valA,valC;
     bool stall,bubble;
 }ereg;

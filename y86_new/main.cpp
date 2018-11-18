@@ -34,16 +34,14 @@ void forward()
     else if(d.srcB==mreg.dstM) d.valB=m.valM;
     else if(d.srcB==mreg.dstE) d.valB=mreg.valE;
     else if(d.srcB==wreg.dstM) d.valB=wreg.valM;
-    else if(d.srcB==wreg.dstE) d.valB=mreg.valE;
-
-    //set_cc
+    else if(d.srcB==wreg.dstE) d.valB=wreg.valE;
 }
 
 int main()
 {
     PC=0;
-    freg.predPC=0;//初始化
-    decoder();
+    freg.predPC=0;ZF=1;SF=0;OF=0;//初始化
+    decoder();mreg.Cnd=1;
     dreg.icode=wreg.icode=mreg.icode=ereg.icode=1;
     f.icode=d.icode=e.icode=m.icode=0;
     f.stat=dreg.stat=d.stat=e.stat=ereg.stat=m.stat=mreg.stat=wreg.stat=AOK;
@@ -56,6 +54,11 @@ int main()
         forward();
         bubble_stall_set();
         run_in_reg();
-        cout<<reg[0];
+        if(Stat)
+        break;
     }
+    cout<<"Your simulation stops here with stat of "<<Stat<<endl;
+    cout<<"Thanks for using, see you next time! Wish you a good day.";
+    for(;;);
+    return 0;
 }

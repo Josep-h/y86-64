@@ -12,7 +12,7 @@ void clearF()
 void bubble_stall_set()
 {
     clearF();
-    freg.stall=(ereg.icode==IR||ereg.icode==POP)&&\
+    freg.stall=(ereg.icode==MR||ereg.icode==POP)&&\
     (ereg.dstM==d.srcA||ereg.dstM==d.srcB)||\
     (dreg.icode==RET||ereg.icode==RET||mreg.icode==RET);
 
@@ -26,10 +26,9 @@ void bubble_stall_set()
     (ereg.icode==MR||ereg.icode==POP)&&\
     (ereg.dstM==d.srcA||ereg.dstM==d.srcB);
 
-    set_cc=(ereg.icode==OP||ereg.icode==RR);/*&&(m.stat==AOK)&&(wreg.stat==AOK);
+    set_cc=(ereg.icode==OP)&&(m.stat==AOK)&&(wreg.stat==AOK);
 
     mreg.bubble=m.stat!=AOK||wreg.stat!=AOK;
 
-    wreg.stall=wreg.stat!=AOK;
-*/    
+    wreg.stall=wreg.stat!=AOK;  
 }

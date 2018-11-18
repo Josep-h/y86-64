@@ -2,9 +2,10 @@
 
 void D::decode()
 {
-    dstM=15;dstE=15;//默认一个不修改的寄存器
+    dstM=NONE;dstE=NONE;srcA=16;srcB=16;//默认一个不修改的寄存器
     rA=dreg.rA;rB=dreg.rB;
     valP=dreg.valP;valC=dreg.valC;
+    valA=valB=0;
     icode=dreg.icode;ifun=dreg.ifun;stat=dreg.stat;
     switch(icode)
     {
@@ -30,14 +31,14 @@ void D::decode()
             srcA=rA;srcB=rB;
             dstE=rB;break;
         case JXX:
-            valA=dreg.valP;break;
+            break;
         case CALL:
-            valB=reg[4];valA=dreg.valP;
+            valB=reg[RSP];
             srcB=RSP;
             dstE=RSP;break;
         case RET:
-            valA=reg[4];
-            valB=reg[4];
+            valA=reg[RSP];
+            valB=reg[RSP];
             srcA=RSP;srcB=RSP;
             dstE=RSP;break;
         case PUSH:
@@ -51,7 +52,4 @@ void D::decode()
             srcA=RSP;srcB=RSP;
             dstE=RSP;dstM=rA;
     }
-    if(wreg.stat==1)
-    Stat=0;
-    else Stat=wreg.stat;
 }

@@ -5,6 +5,7 @@ void E::execute()
     valA=ereg.valA;valB=ereg.valB;valC=ereg.valC;
     icode=ereg.icode;stat=ereg.stat;ifun=ereg.ifun;
     dstE=ereg.dstE;dstM=ereg.dstM;
+    valE=0;
     switch(icode)
     {
         case RR:
@@ -34,11 +35,6 @@ void E::execute()
                 case 2:valE=valB&valA;break;
                 case 3:valE=valB^valA;break;
             }
-            ZF=valE==0;
-            SF=valE<0;
-            if((valB<0==valA<0)&&(valE<0!=valB<0))
-                OF=1;
-            else OF=0;
             break;
         case JXX:
             switch(ifun)

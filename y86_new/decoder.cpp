@@ -12,7 +12,7 @@ int turn(char c)
 int decoder()
 {
     PC=0;
-    ifstream yo("C:\\y86-64\\yo\\pushquestion.yo",ios::in);
+    ifstream yo("C:\\y86-64\\yo\\asumr.yo",ios::in);
     char c;
     if(!yo)
     cout<<"wrong"<<endl;
@@ -40,7 +40,7 @@ int decoder()
         }
         for(int i=0;i<ct;i+=2)
         {
-            code_memory[PC+i/2]=num[i]*16+num[i+1];
+            memory[PC+i/2]=num[i]*16+num[i+1];
             //cout<<memory[PC+i/2]<<"  ";
         }
  /*       cout<<endl;*/
