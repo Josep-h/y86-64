@@ -43,9 +43,14 @@ void run_in_reg()
         {
             ZF=e.valE==0;
             SF=e.valE<0;
-            if((e.valB<0==e.valA<0)&&(e.valE<0!=e.valB<0))
-                OF=1;
-            else OF=0;
+            if(e.ifun!=1)
+                if((e.valB<0==e.valA<0)&&(e.valE<0!=e.valB<0))
+                    OF=1;
+                else OF=0;
+            else if(e.ifun==1)
+                if((e.valB<0!=e.valA<0)&&(e.valE<0!=e.valB<0))
+                    OF=1;
+                else OF=0;
         }
         mreg.Cnd=e.Cnd;
     }
@@ -63,6 +68,7 @@ void run_in_reg()
     else Stat=wreg.stat;
     //write
     if(wreg.icode==NOP)return;
+    if(!(Stat==0||Stat==HLT))return;
     reg[wreg.dstE]=wreg.valE;
     reg[wreg.dstM]=wreg.valM;//M的优先级更高
 }

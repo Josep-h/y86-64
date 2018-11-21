@@ -12,7 +12,7 @@ int turn(char c)
 int decoder()
 {
     PC=0;
-    ifstream yo("C:\\y86-64\\yo\\asumr.yo",ios::in);
+    ifstream yo("C:\\y86-64\\yo\\marked\\abs-asum-jmp.yo",ios::in);
     char c;
     if(!yo)
     cout<<"wrong"<<endl;

@@ -45,7 +45,7 @@ int main()
     dreg.icode=wreg.icode=mreg.icode=ereg.icode=1;
     f.icode=d.icode=e.icode=m.icode=0;
     f.stat=dreg.stat=d.stat=e.stat=ereg.stat=m.stat=mreg.stat=wreg.stat=AOK;
-    reg[RSP]=0;
+    reg[RSP]=0;int r=0;
     while(1)
     {
         //SelectPC
@@ -54,11 +54,13 @@ int main()
         forward();
         bubble_stall_set();
         run_in_reg();
+        r++;
         if(Stat)
         break;
     }
     cout<<"Your simulation stops here with stat of "<<Stat<<endl;
-    cout<<"Thanks for using, see you next time! Wish you a good day.";
+    cout<<"Thanks for using, see you next time! Wish you a good day."<<endl;
+    cout<<"and you have executed "<<r<<" cycles.";
     for(;;);
     return 0;
 }
