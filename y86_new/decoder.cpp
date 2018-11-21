@@ -1,5 +1,6 @@
 #include"y86_essence.h"
 #include<fstream>
+#include<string>
 #include<iostream>
 //这个函数唯一的目的是把读入的文件写入memory并改写为自己适应的形式
 using namespace std;
@@ -11,11 +12,13 @@ int turn(char c)
 }
 int decoder()
 {
+L1:
     PC=0;
-    ifstream yo("C:\\y86-64\\yo\\marked\\abs-asum-jmp.yo",ios::in);
     char c;
-    if(!yo)
-    cout<<"wrong"<<endl;
+    string s;
+    cin>>s;
+    ifstream yo(s,ios::in);
+    if(!yo) {cout<<"Sorry, but the desitination is wrong, would you please try another time?"<<endl;goto L1;}
     while(yo.good())
     {
         c=yo.get();
