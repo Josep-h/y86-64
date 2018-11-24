@@ -7,9 +7,16 @@
 #include"decoder.cpp"
 #include"run_in_reg.cpp"
 #include"bubble_stall_set.cpp"
-# include <stdlib.h>
+#include <stdlib.h>
+#include"stack.cpp"
 using namespace std;
 string error[]={"AOK","AOK","HLT","ADR","INS"};
+
+Data Path;
+//用来控制是否需要后退
+bool back=0;
+
+void BACK(){back=1;}//这个函数用来修改back的值用以回退
 
 string insixteen(long long num)
 {
@@ -54,20 +61,25 @@ int main()
     cout<<"Hope you have nice time here. Please input the location of your .yo file, and then we can start!"<<endl;
     freg.predPC=0;ZF=1;SF=0;OF=0;//初始化
     decoder();mreg.Cnd=1;
+    
     dreg.icode=wreg.icode=mreg.icode=ereg.icode=1;
     f.icode=d.icode=e.icode=m.icode=0;
     f.stat=dreg.stat=d.stat=e.stat=ereg.stat=m.stat=mreg.stat=wreg.stat=AOK;
     reg[RSP]=0;int r=0;int flag=0;
     while(1)
     {
+        if(back)
+            {Path.dataGet();back=0;continue;}
         //SelectPC
+        Path.dataStore();
+        Path.memoryDataStore();
         SelectPC();
         run_in_cons();
         forward();
         bubble_stall_set();
         run_in_reg();
         r++;
-        cout<<"It's the Cycle "<<r<<":"<<endl;
+        /*cout<<"It's the Cycle "<<r<<":"<<endl;
         cout<<"PC: 0x"<<insixteen(PC)<<"  Stat: "<<error[Stat]<<endl;
         cout<<"Condition code: ZF: "<<ZF<<"  "<<"SF: "<<SF<<"  "<<"OF: "<<OF<<endl;
         cout<<"D: icode= "<<dreg.icode<<"   rA="<<dreg.rA<<"  rB="<<dreg.rB<<"  valC=0x"<<insixteen(dreg.valC)<<"  valP=0x"<<insixteen(dreg.valP)<<"  Stat="<<error[dreg.stat]<<endl;
@@ -75,18 +87,18 @@ int main()
         cout<<"M: icode= "<<mreg.icode<<"   Cnd="<<mreg.Cnd<<"  valE=0x"<<insixteen(mreg.valE)<<"  valA=0x"<<insixteen(mreg.valA)<<"  dstE="<<mreg.dstE<<"  Stat="<<error[dreg.stat]<<endl;
         cout<<"W: icode= "<<wreg.icode<<"   valE=0x"<<insixteen(wreg.valE)<<"  dstE="<<wreg.dstE<<"  Stat="<<dreg.stat<<endl;
         cout<<"----------------------------------------------------"<<endl;
-        cout<<endl;
+        cout<<endl;*/
         if(Stat)
         break;
-        if(flag) continue;
+        /*if(flag) continue;
         char s;
         cout<<"Input c for next turn, and ohther words for the final anwser."<<endl;
         cin>>s;
         if(s=='c') continue;
-        else flag=1;
+        else flag=1;*/
         
     }
-    cout<<"----------------------------------------------------"<<endl;
+    /*cout<<"----------------------------------------------------"<<endl;
     cout<<"Your simulation stops here with stat of "<<error[Stat]<<endl;    
     cout<<"and you have executed  "<<r<<"  Cycles.";
     cout<<"Now is the final situation: "<<endl;
@@ -118,7 +130,7 @@ int main()
         }
         else break;
     }
-
+    */
     cout<<"Thanks for using, see you next time! Wish you a good day."<<endl;
     return 0;
 }
