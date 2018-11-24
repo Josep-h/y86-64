@@ -65,42 +65,55 @@ int main()
     dreg.icode=wreg.icode=mreg.icode=ereg.icode=1;
     f.icode=d.icode=e.icode=m.icode=0;
     f.stat=dreg.stat=d.stat=e.stat=ereg.stat=m.stat=mreg.stat=wreg.stat=AOK;
-    reg[RSP]=0;int r=0;int flag=0;
+    reg[RSP]=0;int flag=0;
     while(1)
     {
         if(back)
-            {Path.dataGet();back=0;continue;}
+        {Path.dataGet();back=0;}
         //SelectPC
-        Path.dataStore();
-        Path.memoryDataStore();
-        SelectPC();
-        run_in_cons();
-        forward();
-        bubble_stall_set();
-        run_in_reg();
-        r++;
-        /*cout<<"It's the Cycle "<<r<<":"<<endl;
-        cout<<"PC: 0x"<<insixteen(PC)<<"  Stat: "<<error[Stat]<<endl;
-        cout<<"Condition code: ZF: "<<ZF<<"  "<<"SF: "<<SF<<"  "<<"OF: "<<OF<<endl;
-        cout<<"D: icode= "<<dreg.icode<<"   rA="<<dreg.rA<<"  rB="<<dreg.rB<<"  valC=0x"<<insixteen(dreg.valC)<<"  valP=0x"<<insixteen(dreg.valP)<<"  Stat="<<error[dreg.stat]<<endl;
-        cout<<"E: icode= "<<ereg.icode<<"   valC=0x"<<insixteen(ereg.valA)<<"  valB=0x"<<insixteen(ereg.valB)<<"  srcA="<<ereg.srcA<<"  srcB="<<ereg.srcB<<"  Stat="<<error[dreg.stat]<<endl;
-        cout<<"M: icode= "<<mreg.icode<<"   Cnd="<<mreg.Cnd<<"  valE=0x"<<insixteen(mreg.valE)<<"  valA=0x"<<insixteen(mreg.valA)<<"  dstE="<<mreg.dstE<<"  Stat="<<error[dreg.stat]<<endl;
-        cout<<"W: icode= "<<wreg.icode<<"   valE=0x"<<insixteen(wreg.valE)<<"  dstE="<<wreg.dstE<<"  Stat="<<dreg.stat<<endl;
+        else{
+            Path.dataStore();
+            Path.memoryDataStore();
+            SelectPC();
+            run_in_cons();
+            forward();
+            bubble_stall_set();
+            run_in_reg();
+            r++;}
+        
+        cout<<"It's the Cycle "<<r<<":"<<endl;
+        cout<<"PC= 0x"<<hex<<PC;
+        cout<<"   Stat= "<<error[Stat]<<endl;
+        cout<<"SF= "<<SF<<"   ZF= "<<ZF<<"   OF= "<<OF<<endl;
+        
+        cout<<"D: icode= "<<dec<<dreg.icode<<"  rA= "<<dreg.rA<<"  rB= "<<dreg.rB;
+        printf("   valC= 0x%llx  valP== 0x%llx   ",dreg.valC,dreg.valP);
+        cout<<"Stat= "<<error[dreg.stat]<<endl<<"E: icode= "<<ereg.icode;
+        printf("   valA= 0x%llx   valB= 0x%llx    valC= 0x%llx",ereg.valA,ereg.valB,ereg.valC);
+        cout<<"  srcA="<<ereg.srcA<<"  srcB="<<ereg.srcB<<"  Stat="<<error[dreg.stat]<<endl;
+        
+        cout<<"M: icode= "<<mreg.icode<<"   Cnd="<<mreg.Cnd;
+        printf("   valE= 0x%llx   valA= 0x%llx",mreg.valE,mreg.valA);
+        cout<<"  dstE="<<mreg.dstE<<"  Stat="<<error[dreg.stat]<<endl;
+
+        cout<<"W: icode= "<<wreg.icode;
+        printf("   valE= 0x%llx",wreg.valE);
+        cout<<"   dstE="<<wreg.dstE<<"  Stat="<<dreg.stat<<endl;
         cout<<"----------------------------------------------------"<<endl;
-        cout<<endl;*/
+        cout<<endl;
         if(Stat)
         break;
-        /*if(flag) continue;
+        if(flag) continue;
         char s;
-        cout<<"Input c for next turn, and ohther words for the final anwser."<<endl;
+        cout<<"Input c for next turn, b for the time machine and other words for the final anwser."<<endl;
         cin>>s;
         if(s=='c') continue;
-        else flag=1;*/
-        
+        else if(s=='b') back=1;
+        else flag=1;
     }
-    /*cout<<"----------------------------------------------------"<<endl;
+    cout<<"----------------------------------------------------"<<endl;
     cout<<"Your simulation stops here with stat of "<<error[Stat]<<endl;    
-    cout<<"and you have executed  "<<r<<"  Cycles.";
+    cout<<"and you have executed  "<<dec<<r<<"  Cycles.";
     cout<<"Now is the final situation: "<<endl;
 
     cout<<"Condition code: ZF: "<<ZF<<"  "<<"SF: "<<SF<<"  "<<"OF: "<<OF<<endl;
@@ -116,7 +129,10 @@ int main()
         cin>>tp;
         if(tp<0&&tp>=-16)
         {
-            cout<<"the register you want is: 0x"<<insixteen(reg[-tp-1])<<endl<<"Go on please."<<endl;
+            cout<<"the register you want is: 0x";
+            //printf("%llx",reg[-tp-1]);
+            cout<<hex<<reg[-tp-1];
+            cout<<endl<<"Go on please."<<endl;
         }
         else if(tp>=0) 
         {
@@ -126,11 +142,13 @@ int main()
                 sum=sum<<8;
                 sum+=memory[tp+i];
             }
-            cout<<"So is that what you want? 0x"<<insixteen(sum)<<endl<<"Go on please."<<endl;
+            cout<<"So is that what you want? 0x";
+            printf("%llx\n",sum);
+            cout<<"Go on please."<<endl;
         }
         else break;
     }
-    */
+    
     cout<<"Thanks for using, see you next time! Wish you a good day."<<endl;
     return 0;
 }

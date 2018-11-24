@@ -52,6 +52,8 @@ void run_in_reg()
                     OF=1;
                 else OF=0;
         }
+
+        //写入的权限这里也会进行控制
         mreg.Cnd=e.Cnd;
     }
 

@@ -21,6 +21,8 @@ void E::execute()
                 case 6: Cnd=!(SF^OF)&!ZF;break;
                 default: Cnd=0;
             }
+            if(!Cnd)
+            dstE=NONE;
             break;
         case IR:
             valE=valC;break;

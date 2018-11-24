@@ -5,6 +5,7 @@
         "limits": "cpp",
         "xutility": "cpp",
         "iostream": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "stack": "cpp"
     }
 }

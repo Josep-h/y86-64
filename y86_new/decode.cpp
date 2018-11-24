@@ -11,7 +11,7 @@ void D::decode()
     {
         case RR:
             valA=reg[rA];
-            if(e.Cnd) dstE=rB;
+            dstE=rB;
             srcA=rA;
             dstE=rB;break;
         case IR:

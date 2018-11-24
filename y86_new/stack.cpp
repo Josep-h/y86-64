@@ -1,24 +1,26 @@
 #include"y86_essence.h"
 #include<stack>
-
+#include<vector>
 class Data
 {
 //这个数据结构接受之前所有的计算结果，并且把之前的结果压缩在栈里面
 //通过弹栈来恢复上一个数据，当然这样会消耗巨大的空间，当循环次数太长的时候
     public:
+    stack<int> hisR;
     stack<int> hisPC;
     stack<int> hisStat;
     //Condition code
     stack<bool> hisZF,hisSF,hisOF,hisset_cc;
     //memory
     stack<pair<int,long long> > hisMemory;
-    stack<long long[16]> hisReg;
+    stack<vector<long long> > hisReg;
     //register
     stack<long long> F_predPC;
     stack<bool> F_stall,D_bubble,D_stall,E_bubble,E_stall,M_bubble,M_stall,W_bubble,W_stall;
     stack<int> W_stat,D_stat,E_stat,M_stat;
     stack<int> W_icode,D_icode,E_icode,M_icode;
     stack<int> M_Cnd;
+    stack<int> D_rA,D_rB;
     stack<int> E_ifun,D_ifun;
     stack<int> W_dstE,W_dstM,M_dstE,M_dstM,E_dstE,E_dstM,E_srcA,E_srcB;
     stack<long long> W_valE,W_valM,M_valE,M_valA,E_valA,E_valB,E_valC,D_valC,D_valP;
@@ -30,11 +32,13 @@ class Data
 
 void Data::dataGet()
 {
+    r=hisR.top();hisR.pop();
     PC=hisPC.top();hisPC.pop();
     Stat=hisStat.top();hisStat.pop();
     ZF=hisZF.top();hisZF.pop();
     OF=hisSF.top();hisSF.pop();
-    OF=hisZF.top();hisOF.pop();
+    OF=hisOF.top();hisOF.pop();
+    freg.predPC=F_predPC.top();F_predPC.pop();
     //reg
     for(int i=0;i!=16;i++)
     reg[i]=hisReg.top()[i];
@@ -86,6 +90,10 @@ void Data::dataGet()
     ereg.valA=E_valA.top();E_valA.pop();
     ereg.valB=E_valB.top();E_valB.pop();
     ereg.valC=E_valC.top();E_valC.pop();
+    dreg.rA=D_rA.top();D_rA.pop();
+    dreg.rB=D_rB.top();D_rB.pop();
+    dreg.valP=D_valP.top();D_valP.pop();
+    dreg.valC=D_valC.top();D_valC.pop();
     //memory
     if(hisMemory.top().first!=-1)
     {
@@ -103,9 +111,15 @@ void Data::dataGet()
 void Data::dataStore()
 {
     hisPC.push(PC);hisStat.push(Stat);
-    hisReg.push(reg);hisZF.push(ZF);hisSF.push(SF);hisOF.push(OF);
+    hisZF.push(ZF);hisSF.push(SF);hisOF.push(OF);
     hisset_cc.push(set_cc);
-
+    hisR.push(r);
+    
+    vector<long long> Reg;
+    for(int i=0;i!=16;i++)
+    Reg.push_back(reg[i]);
+    hisReg.push(Reg);
+    
     F_predPC.push(freg.predPC);
     F_stall.push(freg.stall);
     D_bubble.push(dreg.bubble);
@@ -150,7 +164,8 @@ void Data::dataStore()
 
     E_ifun.push(ereg.ifun);
     D_ifun.push(dreg.ifun);
-
+    D_rA.push(dreg.rA);
+    D_rB.push(dreg.rB);
 }
 
 //如果没有写入任何数据则标记一个-1
@@ -166,7 +181,7 @@ void Data::memoryDataStore()
             sum=sum<<8;
             sum+=memory[mreg.valE+i];
         }
-        hisMemory.push(pair<int,long long>(m.valE,sum));
+        hisMemory.push(pair<int,long long>(mreg.valE,sum));
     }
     else hisMemory.push(pair<int,long>(-1,0));
 }
