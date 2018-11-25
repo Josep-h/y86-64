@@ -7,8 +7,8 @@
 #include"decoder.cpp"
 #include"run_in_reg.cpp"
 #include"bubble_stall_set.cpp"
-#include <stdlib.h>
 #include"stack.cpp"
+#include <stdlib.h>
 using namespace std;
 string error[]={"AOK","AOK","HLT","ADR","INS"};
 
@@ -57,7 +57,7 @@ void forward()
 int main()
 {
     PC=0;
-    cout<<"G'Day, nice to meet you! This is a y86-simulator version 1.0's terminal version produced by Runpeng Xie and Mingzhe Zhu. "<<endl;
+    cout<<"G'Day, nice to meet you! This is a y86-simulator version 1.1's terminal version produced by Runpeng Xie and Mingzhe Zhu. "<<endl;
     cout<<"Hope you have nice time here. Please input the location of your .yo file, and then we can start!"<<endl;
     freg.predPC=0;ZF=1;SF=0;OF=0;//初始化
     decoder();mreg.Cnd=1;
@@ -66,11 +66,21 @@ int main()
     f.icode=d.icode=e.icode=m.icode=0;
     f.stat=dreg.stat=d.stat=e.stat=ereg.stat=m.stat=mreg.stat=wreg.stat=AOK;
     reg[RSP]=0;int flag=0;
+    int time_machine;bool flag_time_machine=0;
     while(1)
     {
         if(back)
         {Path.dataGet();back=0;}
+        else if(flag_time_machine&&time_machine<r)
+        {Path.dataGet();continue;}
         //SelectPC
+        else if(flag_time_machine&&time_machine==r)
+        {
+            flag_time_machine=0;
+            cout<<"That's end of your little time travel. Let's go on!"<<endl;
+            cout<<"----------------------------------------------------------"<<endl;
+            cout<<"----------------------------------------------------------"<<endl;
+        }
         else{
             Path.dataStore();
             Path.memoryDataStore();
@@ -80,7 +90,6 @@ int main()
             bubble_stall_set();
             run_in_reg();
             r++;}
-        
         cout<<"It's the Cycle "<<r<<":"<<endl;
         cout<<"PC= 0x"<<hex<<PC;
         cout<<"   Stat= "<<error[Stat]<<endl;
@@ -102,16 +111,69 @@ int main()
         cout<<"----------------------------------------------------"<<endl;
         cout<<endl;
         if(Stat)
-        break;
+        {
+            //把cache中的值写回
+            cache.cache_memory();
+            if(flag_time_machine)
+            cout<<"Sorry, but it's the end of the time, you can't go further. See you next time!"<<endl;
+
+            cout<<"----------------------------------------------"<<endl;
+            cout<<"====   *******   ===    ===  =====      ======"<<endl;
+            cout<<"====   **        ===  =  ==  =====  ===   ===="<<endl;
+            cout<<"====   *******   ===  ==  =  =====  ====   ==="<<endl;
+            cout<<"====   **        ===  ===    =====  ===   ===="<<endl;
+            cout<<"====   *******   ===  ====   =====     ======="<<endl;
+            cout<<"----------------------------------------------"<<endl;
+            break;
+        }
         if(flag) continue;
         char s;
-        cout<<"Input c for next turn, b for the time machine and other words for the final anwser."<<endl;
+        if(flag_time_machine) continue;
+LSTACK:
+        cout<<"Input c for next turn, b for last cycle, s for viewing the stack, t to start time machine"<<endl;
+        cout<<"And other words for the final anwser. G'day!"<<endl;
         cin>>s;
         if(s=='c') continue;
         else if(s=='b') back=1;
+        else if(s=='s') 
+        {
+            cout<<"Please input a positive decimal x to view the top x nums in the stack..."<<endl;
+            int tp;
+            cin>>tp;
+            bool OVER=0;
+            for(int i=0;i!=tp&&OVER==0;i++)//查询栈的情况
+            {
+                long long sum=0;
+                for(int j=7;j!=-1;j--)
+                {
+                    sum=sum<<8;
+                    if(reg[RSP]+j-8*i<0)
+                    {cout<<"Sorry, but that's all. There's nothing else in the stack."<<endl;OVER=1;break;}
+                    
+                    sum+=memory[reg[RSP]+j-8*i];
+                }
+                cout<<"   0x"<<hex<<reg[RSP]-8*i<<" : "<<sum<<endl;
+            }
+            cout<<"That's all you want. What's next?"<<endl;
+            goto LSTACK;
+        }
+        else if(s=='t')//启动时光机，到达任何一个循环
+        {
+            int tp;
+            cout<<"Time machine starts! Which cycle do you want to go? Input a positive decimal,please."<<endl;
+            cin>>tp;
+            if(tp<0)
+            {
+                cout<<"No, that's a dangerous try, please don't do that."<<endl;
+                goto LSTACK;
+            }
+            flag_time_machine=1;time_machine=tp;
+            cout<<"Time machine starts now. "<<endl;
+            cout<<"----------------------------------------------------------"<<endl;
+            cout<<"----------------------------------------------------------"<<endl;
+        }
         else flag=1;
     }
-    cout<<"----------------------------------------------------"<<endl;
     cout<<"Your simulation stops here with stat of "<<error[Stat]<<endl;    
     cout<<"and you have executed  "<<dec<<r<<"  Cycles.";
     cout<<"Now is the final situation: "<<endl;
@@ -119,7 +181,7 @@ int main()
     cout<<"Condition code: ZF: "<<ZF<<"  "<<"SF: "<<SF<<"  "<<"OF: "<<OF<<endl;
 
     cout<<"Now you can input a positive decimal to get the num in the memory"<<endl;
-    cout<<"Or a decimal x which x>=-16&&x<0 to view a num in register,(e.g. -1 for /% rax)"<<endl;
+    cout<<"Or a decimal x which x>=-16&&x<0 to view a num in register,(e.g. -1 for %rax)"<<endl;
     cout<<"Put in something else to quit"<<endl;
     cout<<"And Please in a decimal number"<<endl;
     
@@ -127,14 +189,14 @@ int main()
     {    
         int tp;
         cin>>tp;
-        if(tp<0&&tp>=-16)
+        if(tp<0&&tp>=-16)//查看寄存器的情况
         {
             cout<<"the register you want is: 0x";
             //printf("%llx",reg[-tp-1]);
             cout<<hex<<reg[-tp-1];
             cout<<endl<<"Go on please."<<endl;
         }
-        else if(tp>=0) 
+        else if(tp>=0) //查看内存的情况
         {
             long long sum=0;
             for(int i=7;i!=-1;i--)

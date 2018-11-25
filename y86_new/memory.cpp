@@ -1,5 +1,4 @@
 #include"y86_essence.h"
-
 void M::memo()
 {
     icode=mreg.icode;stat=mreg.stat;
@@ -14,7 +13,7 @@ void M::memo()
             for(int i=7;i!=-1;i--)
             {
                 sum=sum<<8;
-                sum+=memory[valE+i];
+                sum+=cache.visit(valE+i);
             }
             valM=sum;
             break;
@@ -25,7 +24,7 @@ void M::memo()
             for(int i=7;i!=-1;i--)
             {
                 sum=sum<<8;
-                sum+=memory[valA+i];
+                sum+=cache.visit(valA+i);
             }
             valM=sum;
             break;
@@ -35,7 +34,7 @@ void M::memo()
             {mem_error=1;break;}
             for(int i=0;i!=8;i++)
             {
-                memory[valE+i]=valA&255;
+                cache.write(valE+i,valA&255);
                 valA=valA>>8;
             }//这样写回的负数依旧保持补码的形式
             break;
@@ -44,7 +43,7 @@ void M::memo()
             {mem_error=1;break;}
             for(int i=0;i!=8;i++)
             {
-                memory[valE+i]=valA&255;
+                cache.write(valE+i,valA&255);
                 valA=valA>>8;
             }//这样写回的负数依旧保持补码的形式
             break;

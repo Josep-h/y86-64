@@ -9,6 +9,7 @@ class Data
     stack<int> hisR;
     stack<int> hisPC;
     stack<int> hisStat;
+    stack<Cache> hisCache;
     //Condition code
     stack<bool> hisZF,hisSF,hisOF,hisset_cc;
     //memory
@@ -25,13 +26,19 @@ class Data
     stack<int> W_dstE,W_dstM,M_dstE,M_dstM,E_dstE,E_dstM,E_srcA,E_srcB;
     stack<long long> W_valE,W_valM,M_valE,M_valA,E_valA,E_valB,E_valC,D_valC,D_valP;
 
-    void dataGet();
+    bool dataGet();//1 for success, 0 for error
     void dataStore();
     void memoryDataStore();
 };
 
-void Data::dataGet()
+bool Data::dataGet()
 {
+    if(hisR.empty())
+    {
+        cout<<"No, you can't go further, that's will take you out of this space! Try go ahead!"<<endl;
+        return 0;
+    }
+    cache=hisCache.top();hisCache.pop();
     r=hisR.top();hisR.pop();
     PC=hisPC.top();hisPC.pop();
     Stat=hisStat.top();hisStat.pop();
@@ -106,6 +113,7 @@ void Data::dataGet()
         }
     }
     hisMemory.pop();
+    return 1;
 }
 
 void Data::dataStore()
@@ -114,7 +122,7 @@ void Data::dataStore()
     hisZF.push(ZF);hisSF.push(SF);hisOF.push(OF);
     hisset_cc.push(set_cc);
     hisR.push(r);
-    
+    hisCache.push(cache);
     vector<long long> Reg;
     for(int i=0;i!=16;i++)
     Reg.push_back(reg[i]);
@@ -182,6 +190,26 @@ void Data::memoryDataStore()
             sum+=memory[mreg.valE+i];
         }
         hisMemory.push(pair<int,long long>(mreg.valE,sum));
+    }
+    else if(mreg.icode==MR&&mreg.valE>=0)
+    {
+        long long sum=0;
+        for(int i=7;i!=-1;i--)
+        {
+            sum=sum<<8;
+            sum+=memory[mreg.valE+i];
+        }
+        hisMemory.push(pair<int,long long>(mreg.valE,sum));
+    }
+    else if((mreg.icode==RET||mreg.icode==POP)&&mreg.valA>=0)
+    {
+        long long sum=0;
+        for(int i=7;i!=-1;i--)
+        {
+            sum=sum<<8;
+            sum+=memory[mreg.valA+i];
+        }
+        hisMemory.push(pair<int,long long>(mreg.valA,sum));
     }
     else hisMemory.push(pair<int,long>(-1,0));
 }
