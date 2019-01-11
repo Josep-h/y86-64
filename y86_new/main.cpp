@@ -12,7 +12,7 @@
 using namespace std;
 string error[]={"AOK","AOK","HLT","ADR","INS"};
 
-Data Path;
+
 //用来控制是否需要后退
 bool back=0;
 
@@ -56,9 +56,10 @@ void forward()
 
 int main()
 {
+    outfile.open("output.txt"); 
     PC=0;
-    cout<<"G'Day, nice to meet you! This is a y86-simulator version 1.1's terminal version produced by Runpeng Xie and Mingzhe Zhu. "<<endl;
-    cout<<"Hope you have nice time here. Please input the location of your .yo file, and then we can start!"<<endl;
+    outfile<<"G'Day, nice to meet you! This is a y86-simulator version 1.1's terminal version produced by Runpeng Xie and Mingzhe Zhu. "<<endl;
+    outfile<<"Hope you have nice time here. Please input the location of your .yo file, and then we can start!"<<endl;
     freg.predPC=0;ZF=1;SF=0;OF=0;//初始化
     decoder();mreg.Cnd=1;
     
@@ -115,7 +116,7 @@ int main()
             //把cache中的值写回
             cache.cache_memory();
             if(flag_time_machine)
-            cout<<"Sorry, but it's the end of the time, you can't go further. See you next time!"<<endl;
+            cout<<"Sorry, but it's the end of the time, you can't go any further. See you next time!"<<endl;
 
             cout<<"----------------------------------------------"<<endl;
             cout<<"====   *******   ===    ===  =====      ======"<<endl;

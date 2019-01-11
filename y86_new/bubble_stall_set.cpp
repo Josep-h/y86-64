@@ -15,13 +15,13 @@ void bubble_stall_set()
     freg.stall=(ereg.icode==MR||ereg.icode==POP)&&\
     (ereg.dstM==d.srcA||ereg.dstM==d.srcB)||\
     (dreg.icode==RET||ereg.icode==RET||mreg.icode==RET);
-
+//d.srcA和d.srcB需要在decode之后得到结果
     dreg.stall=(ereg.icode==MR||ereg.icode==POP)&&(ereg.dstM==d.srcA||ereg.dstM==d.srcB);
 
     dreg.bubble=((ereg.icode==JXX)&&!e.Cnd)||\
     !((ereg.icode==MR||ereg.icode==POP)&&(ereg.dstM==d.srcA||ereg.dstM==d.srcB))&&\
     (dreg.icode==RET||ereg.icode==RET||mreg.icode==RET);
-
+//e.Cnd需要在execute之后知道结果
     ereg.bubble=(ereg.icode==JXX&&!e.Cnd)||\
     (ereg.icode==MR||ereg.icode==POP)&&\
     (ereg.dstM==d.srcA||ereg.dstM==d.srcB);

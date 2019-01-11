@@ -1,16 +1,25 @@
 #pragma once
 #include<string>
+#include<vector>
+#include"stack.cpp"
+#include<fstream>
+#include<iostream>
 using namespace std;
 //常量
 const int AOK=1,HLT=2,ADR=3,INS=4; 
+string registers[]={"rax","rcx","rdx","rbx","rsp","rbp","rsi","rdi","r8","r9","r10","r11","r12","r13","r14","NONE"};
 const int HALT=0,NOP=1,RR=2,IR=3,RM=4,MR=5,OP=6,JXX=7,CM=2,CALL=8,RET=9,PUSH=10,POP=11;
 const int RSP=4,NONE=15;
 int ZF,SF,OF,set_cc;//条件寄存器
 long long reg[16];//寄存器
 int r=0;
 int PC=0,Stat;
+Data Path;
 //PC相当于这个数组的下标
 int memory[1024];//地址位需要10位完全确定一个位置
+vector<string> historyChange;//修改记录
+ofstream outfile;
+
 //里面的数字都以8个字节为一个单位存储。刚好和命令的最长长度相同。并且保留补码的形式
 //以下是五个状态值
 class F{
@@ -178,4 +187,22 @@ void Cache::cache_memory()
             memory[add+j]=tp.blocks[j];
         }
     }
+}
+
+void SelectPC()
+{
+    //jxx
+    if(mreg.icode==JXX&&!mreg.Cnd)
+        PC=mreg.valA;
+    //ret
+    else if(wreg.icode==RET)
+        PC=wreg.valM;
+    else PC=freg.predPC;
+}
+
+void F::f_pred()
+{
+    if(icode==CALL||icode==JXX)
+        f.predPC=f.valC;
+    else f.predPC=f.valP;
 }

@@ -1,6 +1,10 @@
 #include"y86_essence.h"
 #include<stack>
 #include<vector>
+#include<string>
+#include<iostream>
+using namespace std;
+
 class Data
 {
 //这个数据结构接受之前所有的计算结果，并且把之前的结果压缩在栈里面
@@ -10,6 +14,7 @@ class Data
     stack<int> hisPC;
     stack<int> hisStat;
     stack<Cache> hisCache;
+    stack<vector<string> > hisChange;//修改记录
     //Condition code
     stack<bool> hisZF,hisSF,hisOF,hisset_cc;
     //memory
@@ -25,7 +30,7 @@ class Data
     stack<int> E_ifun,D_ifun;
     stack<int> W_dstE,W_dstM,M_dstE,M_dstM,E_dstE,E_dstM,E_srcA,E_srcB;
     stack<long long> W_valE,W_valM,M_valE,M_valA,E_valA,E_valB,E_valC,D_valC,D_valP;
-
+    
     bool dataGet();//1 for success, 0 for error
     void dataStore();
     void memoryDataStore();
@@ -45,6 +50,7 @@ bool Data::dataGet()
     ZF=hisZF.top();hisZF.pop();
     OF=hisSF.top();hisSF.pop();
     OF=hisOF.top();hisOF.pop();
+    historyChange=hisChange.top();hisChange.pop();
     freg.predPC=F_predPC.top();F_predPC.pop();
     //reg
     for(int i=0;i!=16;i++)
@@ -127,7 +133,7 @@ void Data::dataStore()
     for(int i=0;i!=16;i++)
     Reg.push_back(reg[i]);
     hisReg.push(Reg);
-    
+    hisChange.push(historyChange);
     F_predPC.push(freg.predPC);
     F_stall.push(freg.stall);
     D_bubble.push(dreg.bubble);

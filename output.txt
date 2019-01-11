@@ -1,0 +1,2 @@
+G'Day, nice to meet you! This is a y86-simulator version 1.1's terminal version produced by Runpeng Xie and Mingzhe Zhu. 
+Hope you have nice time here. Please input the location of your .yo file, and then we can start!
