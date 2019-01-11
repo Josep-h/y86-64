@@ -12,6 +12,8 @@ void BACK(){back=1;}//这个函数用来修改back的值用以回退
 
 int main()
 {
+    L2:
+    r=0;
     PC=0;
     cout<<"G'Day, nice to meet you! This is a y86-simulator version 1.1's terminal version produced by Runpeng Xie and Mingzhe Zhu. "<<endl;
     cout<<"Hope you have nice time here. Please input the location of your .yo file, and then we can start!"<<endl;
@@ -57,7 +59,7 @@ int main()
 
         cout<<"W: icode= "<<wreg.icode;
         printf("   valE= 0x%llx",wreg.valE);
-        cout<<"   dstE="<<wreg.dstE<<"  Stat="<<dreg.stat<<endl;
+        cout<<"   dstE="<<wreg.dstE<<"  Stat="<<wreg.stat<<"  ValM="<<wreg.valM<<endl;
         cout<<"----------------------------------------------------"<<endl;
         cout<<endl;
         if(Stat)
@@ -158,6 +160,7 @@ LSTACK:
             printf("%llx\n",sum);
             cout<<"Go on please."<<endl;
         }
+        else if(tp==-200) goto L2;
         else break;
     }
     

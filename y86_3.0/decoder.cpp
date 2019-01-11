@@ -15,9 +15,10 @@ int decoder()
 L1:
     PC=0;
     char c;
+    string s1="C:\\y86-64\\yo\\passed\\";
     string s;
     cin>>s;
-    ifstream yo(s,ios::in);
+    ifstream yo(s1+s,ios::in);
     if(!yo) {cout<<"Sorry, but the desitination is wrong, would you please try another time?"<<endl;goto L1;}
     while(yo.good())
     {

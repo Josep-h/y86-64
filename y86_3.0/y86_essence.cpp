@@ -13,7 +13,6 @@ extern Mreg mreg;
 extern Wreg wreg;
 extern Cache cache;
 extern Data Path;
-
 void Set::miss(int set_index,int tag_new)//访问内存并从内存中取出值放入相应的set里面
 {
     if(!valid) valid=1;
@@ -99,9 +98,6 @@ void Cache::cache_memory()
     }
 }
 
-
-//---------------
-#include<thread>
 //以下是exe函数，这些函数可以完全并行
 
 bool valid(int i)
@@ -117,6 +113,7 @@ void F::fetch()
     else if(wreg.icode==RET)
         PC=wreg.valM;
     else PC=freg.predPC;
+
     icode=memory[PC]/16;
     ifun=memory[PC]%16;
     int instr_valid=icode<12&&icode>=0;
@@ -170,10 +167,10 @@ void F::fetch()
     else if(!instr_valid) stat=INS;
     else if(icode==HALT) stat=HLT;
     else stat=AOK;
+	
 	if(icode==CALL||icode==JXX)
-        f.predPC=f.valC;
-    else f.predPC=f.valP;
-	SIG_F=1;
+        predPC=valC;
+    else predPC=valP;
 }
 void D::decode()
 {
@@ -227,7 +224,6 @@ void D::decode()
             srcA=RSP;srcB=RSP;
             dstE=RSP;dstM=rA;
     }
-	SIG_D=1;
 }
 void E::execute()
 {
@@ -287,7 +283,6 @@ void E::execute()
         case POP:
             valE=valB+8;break;
     }
-	SIG_E=1;
 }
 void M::memo()
 {
@@ -342,7 +337,6 @@ void M::memo()
     }
     if(mem_error) stat=ADR;
     else stat=mreg.stat;
-	SIG_M=1;
 }
 
 //转发函数
@@ -363,28 +357,28 @@ void forward()
     else if(d.srcB==mreg.dstE) d.valB=mreg.valE;
     else if(d.srcB==wreg.dstM) d.valB=wreg.valM;
     else if(d.srcB==wreg.dstE) d.valB=wreg.valE;
-	
-	SIG_forward=1;
+	// cout<<"forward"<<endl;
 }
 
 //以下是bubbleset以及load函数
-void FectchBubbleSetAndLoad()
+void FectchBubble()
 {
     //等待f，d结束
     freg.stall=0;
     freg.stall=(ereg.icode==MR||ereg.icode==POP)&&\
     (ereg.dstM==d.srcA||ereg.dstM==d.srcB)||\
     (dreg.icode==RET||ereg.icode==RET||mreg.icode==RET);
-
-    //Load
+}
+void FetchLoad()
+{
+        //Load
     if(freg.stall);
     else
         freg.predPC=f.predPC;
-	
-	SIG_FB=1;
+	// cout<<"F"<<endl;
 }
 
-void DecodeBubbleSetAndLoad()
+void DecodeBubble()
 {
 	//等待d,f,e结束
 	//等待F
@@ -394,8 +388,10 @@ void DecodeBubbleSetAndLoad()
     dreg.bubble=((ereg.icode==JXX)&&!e.Cnd)||\
     !((ereg.icode==MR||ereg.icode==POP)&&(ereg.dstM==d.srcA||ereg.dstM==d.srcB))&&\
     (dreg.icode==RET||ereg.icode==RET||mreg.icode==RET);
-
-    //Load
+}
+void DecodeLoad()
+{
+        //Load
     if(dreg.stall);
     else if(dreg.bubble) 
     {dreg.icode=1;dreg.stat=AOK;}
@@ -404,17 +400,15 @@ void DecodeBubbleSetAndLoad()
         dreg.rA=f.rA;dreg.rB=f.rB;
         dreg.valC=f.valC;dreg.valP=f.valP;
     }
-
-	SIG_DB=1;
+    // cout<<"D"<<endl;
 }
 void set_cc_fun()
 {
 	//等待m结束
     set_cc=(ereg.icode==OP)&&(m.stat==AOK)&&(wreg.stat==AOK);
-	
-	SIG_SET=1;
+	// cout<<"set"<<endl;
 }
-void ExecuteBubbleSetAndLoad()
+void ExecuteBubble()
 {
     //等待FD
 	//等待e，d
@@ -424,8 +418,9 @@ void ExecuteBubbleSetAndLoad()
     ereg.bubble=(ereg.icode==JXX&&!e.Cnd)||\
     (ereg.icode==MR||ereg.icode==POP)&&\
     (ereg.dstM==d.srcA||ereg.dstM==d.srcB);
-
-    //Load
+}
+void ExecuteLoad()
+{
     if(ereg.bubble) {ereg.icode=1;ereg.stat=AOK;}
     else if(ereg.stall);//什么也不做
     else
@@ -433,16 +428,19 @@ void ExecuteBubbleSetAndLoad()
     ereg.valC=d.valC;ereg.valA=d.valA;ereg.valB=d.valB;
     ereg.srcA=d.srcA;ereg.srcB=d.srcB;
     ereg.dstE=d.dstE;ereg.dstM=d.dstM;}
-	
-	SIG_EB=1;
+	// cout<<"E"<<endl;
 }
-void WriteBubbleSetAndLoad()
+void WriteBubble()
 {
     //需要等待MemoryBubbleSetAndLoad结束
     //需要等待set_cc结束
 	//等待m
     wreg.bubble=wreg.stall=0;
     wreg.stall=wreg.stat!=AOK;
+    
+}
+void WriteLoad()
+{
     //memory to write
     if(wreg.bubble) {wreg.icode=1;wreg.stat=AOK;}
     else if(wreg.stall);
@@ -455,21 +453,24 @@ void WriteBubbleSetAndLoad()
     Stat=0;
     else Stat=wreg.stat;
     //write
+    // cout<<"W"<<endl;
     if(wreg.icode==NOP)return;
     if(!(Stat==0||Stat==HLT))return;
     reg[wreg.dstE]=wreg.valE;
     reg[wreg.dstM]=wreg.valM;//M的优先级更高
-	
-	SIG_WB=1;
 }
-void MemoryBubbleSetAndLoad()
+void MemoryBubble()
 {
     //需要等待FD结束
 	//等待setcc
 	//等待e
     mreg.bubble=mreg.stall=0;
     mreg.bubble=m.stat!=AOK||wreg.stat!=AOK;
-    //execute to memory
+	// cout<<"M"<<endl;
+}
+void MemoryLoad()
+{
+        //execute to memory
     if(mreg.bubble) {mreg.icode=1;mreg.stat=AOK;}
     else if(mreg.stall);
     else
@@ -490,35 +491,34 @@ void MemoryBubbleSetAndLoad()
                     OF=1;
                 else OF=0;
         }
-
-        //写入的权限这里也会进行控制
         mreg.Cnd=e.Cnd;
     }
-	
-	SIG_MB=1;
 }
-
 void to_use_fetch(int id)
 {
 	switch(id)
 	{
-		case 1: f.fetch();   break;
-		case 2: d.decode();  break;
-		case 3: e.execute(); break;
-		case 4: m.memo();    break;
+		case 1: f.fetch();SIG_F=1 ;  break;//前面几个没有冲突的可能
+		case 2: d.decode();SIG_D=1 ; break;
+		case 3: e.execute();SIG_E=1; break;
+		case 4: m.memo(); SIG_M=1;   break;
 		case 5:     //需要等待e，m
-			while(SIG_E!=1||SIG_M!=1);
-			forward();   
+			while(SIG_E!=1||SIG_M!=1||SIG_D!=1) ;//cout<<"Checking...forward"<<endl;
+			forward();
+            SIG_forward=1;   
 			break;
 		case 6:     //等待f，d结束
-			while(SIG_F!=1||SIG_D!=1);
-			FectchBubbleSetAndLoad(); 
+			while(SIG_F!=1||SIG_D!=1) ;//cout<<"Checking...fetch"<<endl;
+			FectchBubble(); 
+            SIG_FB=1;
 			break;
 		case 7:    //等待d,f,e结束
 				   //等待F
 			while(SIG_D!=1||SIG_F!=1||SIG_E!=1\
-			||SIG_FB!=1);
-			DecodeBubbleSetAndLoad();  
+			||SIG_FB!=1||\
+            SIG_forward!=1) ;//cout<<"Checking...decode"<<endl;
+			DecodeBubble();
+            SIG_DB=1;  
 			break;
 		case 8:    //等待FD
 				   //等待e，d
@@ -526,28 +526,56 @@ void to_use_fetch(int id)
     			   //等待set_cc
 			while(SIG_DB!=1||SIG_FB!=1||\
 			SIG_E!=1||SIG_D!=1||\
-			SIG_forward!=1||SIG_SET!=1);
-			ExecuteBubbleSetAndLoad(); 
+			SIG_forward!=1||SIG_SET!=1) ;//cout<<"Checking...execute"<<endl;
+			ExecuteBubble(); 
+            SIG_EB=1;
 			break;
 		case 9:    //需要等待MemoryBubbleSetAndLoad结束
     			   //需要等待set_cc结束
 				   //等待m
 			while(SIG_MB!=1||\
 				SIG_SET!=1||\
-				SIG_M!=1);
-			WriteBubbleSetAndLoad();   
+				SIG_M!=1||\
+                SIG_forward!=1) ;//cout<<"Checking...write"<<endl;
+			WriteBubble();  
+            SIG_WB=1; 
 			break;
 		case 10:   //需要等待FD结束
 				   //等待setcc
 				   //等待e
 			while(SIG_FB!=1||SIG_DB!=1||\
 				SIG_SET!=1||\
-				SIG_E!=1);
-			MemoryBubbleSetAndLoad(); 
+				SIG_E!=1||SIG_M!=1||\
+                SIG_forward!=1) ;//cout<<"Checking...memory"<<endl;
+			MemoryBubble();
+            SIG_MB=1; 
 			break;
 		case 11:   //等待m结束
-			while(SIG_M!=1);
+			while(SIG_M!=1) ;//cout<<"Checking...set_cc"<<endl;
 			set_cc_fun();
+            SIG_SET=1;
+            break;
+        
+        case 12: // f set
+            while(SIG_FB!=1);
+            FetchLoad();
+            break;
+        case 13: // f set
+            while(SIG_DB!=1);
+            DecodeLoad();
+            break;
+        case 14:
+            while(SIG_EB!=1);
+            ExecuteLoad();
+            break;
+        case 15:
+            while(SIG_MB!=1);
+            MemoryLoad();
+            break;
+        case 16:
+            while(SIG_WB!=1);
+            WriteLoad();
+            break;
 	}
 	
 }
@@ -556,7 +584,7 @@ void OneCycle()
 	SIG_CLEAR();
 	Path.dataStore();
     Path.memoryDataStore();
-	HANDLE threads[12];
+	HANDLE threads[17];
 	
 	threads[1]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)1,0,NULL);
 	threads[2]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)2,0,NULL);
@@ -565,17 +593,37 @@ void OneCycle()
 
 	threads[5]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)5,0,NULL);
 
-	threads[11]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)11,0,NULL);//setcc load
-	threads[6]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)6,0,NULL);//fetch load
-	threads[7]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)7,0,NULL);//deocde load
+	threads[6]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)6,0,NULL);//fetch bubble
+	threads[7]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)7,0,NULL);//deocde bubble
+	threads[11]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)11,0,NULL);//setcc 
 
-	threads[8]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)8,0,NULL);//exe load
-	threads[9]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)9,0,NULL);//write load
-	threads[10]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)10,0,NULL);//memory load
-	for(int i=1;i<=11;i++)
+	threads[8]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)8,0,NULL);//exe bubble
+	threads[10]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)10,0,NULL);//memory bubble
+	threads[9]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)9,0,NULL);//write bubble
+
+    threads[12]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)12,0,NULL);//write bubble
+	threads[13]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)13,0,NULL);//write bubble
+	threads[14]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)14,0,NULL);//write bubble
+	threads[15]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)15,0,NULL);//write bubble
+	threads[16]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)16,0,NULL);//write bubble
+	for(int i=1;i<=16;i++)
 	{
 		WaitForSingleObject(threads[i],5000);
 	}
+    
+    /*f.fetch();
+    d.decode();
+    e.execute();
+    m.memo();
+    
+    forward();
+
+    FectchBubbleSetAndLoad();
+    DecodeBubbleSetAndLoad();
+    set_cc_fun();
+    ExecuteBubbleSetAndLoad();
+    MemoryBubbleSetAndLoad();
+    WriteBubbleSetAndLoad();*/
 }
 
 void SIG_CLEAR()

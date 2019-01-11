@@ -7,10 +7,11 @@
 using namespace std;
 //常量
 const int AOK=1,HLT=2,ADR=3,INS=4; 
-string registers[]={"rax","rcx","rdx","rbx","rsp","rbp","rsi","rdi","r8","r9","r10","r11","r12","r13","r14","NONE"};
+const string registers[]={"rax","rcx","rdx","rbx","rsp","rbp","rsi","rdi","r8","r9","r10","r11","r12","r13","r14","NONE"};
 const int HALT=0,NOP=1,RR=2,IR=3,RM=4,MR=5,OP=6,JXX=7,CM=2,CALL=8,RET=9,PUSH=10,POP=11;
-const int num_table[]={0,1,2,3,4,5,6,7,8,9,10,11};
-bool SIG_F=0,SIG_D=0,SIG_E=0,SIG_M=0,SIG_forward=0,SIG_FB=0,SIG_DB=0,SIG_SET=0,SIG_EB=0,SIG_WB=0,SIG_MB=0;
+
+bool SIG_F=0,SIG_D=0,SIG_E=0,SIG_M=0,SIG_forward=0;
+bool SIG_FB=0,SIG_DB=0,SIG_SET=0,SIG_EB=0,SIG_WB=0,SIG_MB=0;
 const int RSP=4,NONE=15;
 int ZF,SF,OF,set_cc;//条件寄存器
 long long reg[16];//寄存器
@@ -19,7 +20,6 @@ int PC=0,Stat;
 //PC相当于这个数组的下标
 int memory[1024];//地址位需要10位完全确定一个位置
 vector<string> historyChange;//修改记录
-ofstream outfile;
 
 //里面的数字都以8个字节为一个单位存储。刚好和命令的最长长度相同。并且保留补码的形式
 //以下是五个状态值
@@ -136,12 +136,12 @@ class Data
     void memoryDataStore();
 }Path;
 
-void FectchBubbleSetAndLoad();
-void DecodeBubbleSetAndLoad();
-void ExecuteBubbleSetAndLoad();
-void WriteBubbleSetAndLoad();
+void FectchBubble();
+void DecodeBubble();
+void ExecuteBubble();
+void WriteBubble();
 void set_cc_fun();
-void MemoryBubbleSetAndLoad();
+void MemoryBubble();
 void to_use_fetch(int id);
 void OneCycle();
 void SIG_CLEAR();
