@@ -1,7 +1,12 @@
 #include"y86_essence.h"
 #include<stack>
 #include<windows.h>
+#include<mutex>
+// #include<corecrt.h>
+
+CRITICAL_SECTION g_cs;
 using namespace std;
+// std::mutex mx;
 extern F f;
 extern D d;
 extern E e;
@@ -13,6 +18,14 @@ extern Mreg mreg;
 extern Wreg wreg;
 extern Cache cache;
 extern Data Path;
+int hitcount,misscount;
+int hitcoutn_all,misscount_all;
+int WRITE_FLAG;
+string EXEORDER[17];
+HANDLE threads[17];
+int exe_count;
+int exe_count_lock;
+stack<HANDLE> waiting_thread;
 void Set::miss(int set_index,int tag_new)//访问内存并从内存中取出值放入相应的set里面
 {
     if(!valid) valid=1;
@@ -50,9 +63,13 @@ int Cache::visit(long long add)
     addtp/=8;//<16
     tag=addtp;
     if(sets[set_index].valid&&sets[set_index].tag==tag)//hit
+    {
+        hitcount++;hitcoutn_all++;
         return sets[set_index].blocks[offset];
+    }
     else 
     {
+        misscount++;misscount_all++;
         sets[set_index].miss(set_index,tag);//获得新的set值
         return sets[set_index].blocks[offset];
     }
@@ -71,10 +88,12 @@ void Cache::write(long long add,int val)//val是一个byte
     tag=addtp;
     if(sets[set_index].valid&&sets[set_index].tag==tag)//hit
     {
+        hitcount++;hitcoutn_all++;
         sets[set_index].blocks[offset]=val;
     }
     else 
     {
+        misscount++;misscount_all++;
         sets[set_index].miss(set_index,tag);//获得新的set值
         sets[set_index].blocks[offset]=val;
     }
@@ -106,14 +125,6 @@ bool valid(int i)
 }
 void F::fetch()
 {
-	//jxx
-    if(mreg.icode==JXX&&!mreg.Cnd)
-        PC=mreg.valA;
-    //ret
-    else if(wreg.icode==RET)
-        PC=wreg.valM;
-    else PC=freg.predPC;
-
     icode=memory[PC]/16;
     ifun=memory[PC]%16;
     int instr_valid=icode<12&&icode>=0;
@@ -290,11 +301,13 @@ void M::memo()
     valE=mreg.valE;valA=mreg.valA;valM=0;
     dstE=mreg.dstE;dstM=mreg.dstM;
     long long sum=0;bool mem_error=0;
+    hitcount=0;misscount=0;WRITE_FLAG=0;
     switch(icode)
     {
         case MR:
             if(valE<0)
             {mem_error=1;break;}
+            WRITE_FLAG=1;
             for(int i=7;i!=-1;i--)
             {
                 sum=sum<<8;
@@ -306,6 +319,7 @@ void M::memo()
         case POP:
             if(valA<0)
             {mem_error=1;break;}
+            WRITE_FLAG=1;//READ
             for(int i=7;i!=-1;i--)
             {
                 sum=sum<<8;
@@ -317,6 +331,7 @@ void M::memo()
         case PUSH:
             if(valE<0)
             {mem_error=1;break;}
+            WRITE_FLAG=2;
             for(int i=0;i!=8;i++)
             {
                 cache.write(valE+i,valA&255);
@@ -326,6 +341,7 @@ void M::memo()
         case CALL:
             if(valE<0)
             {mem_error=1;break;}
+            WRITE_FLAG=2;
             for(int i=0;i!=8;i++)
             {
                 cache.write(valE+i,valA&255);
@@ -498,18 +514,36 @@ void to_use_fetch(int id)
 {
 	switch(id)
 	{
-		case 1: f.fetch();SIG_F=1 ;  break;//前面几个没有冲突的可能
-		case 2: d.decode();SIG_D=1 ; break;
-		case 3: e.execute();SIG_E=1; break;
-		case 4: m.memo(); SIG_M=1;   break;
+		case 1: 
+            f.fetch();
+            Exeorder("fetch_data_get");
+            SIG_F=1 ;
+            break;//前面几个没有冲突的可能
+		case 2: 
+            d.decode();
+            Exeorder("decode_data_get");
+            SIG_D=1 ;
+            break;
+		case 3:
+            e.execute();
+            Exeorder("execute_data_get");
+            SIG_E=1;
+            break;
+		case 4:
+            m.memo();
+            Exeorder("memory_data_get");
+            SIG_M=1;
+            break;
 		case 5:     //需要等待e，m
 			while(SIG_E!=1||SIG_M!=1||SIG_D!=1) ;//cout<<"Checking...forward"<<endl;
 			forward();
+            Exeorder("forward");
             SIG_forward=1;   
 			break;
 		case 6:     //等待f，d结束
 			while(SIG_F!=1||SIG_D!=1) ;//cout<<"Checking...fetch"<<endl;
 			FectchBubble(); 
+            Exeorder("fetch_bubble");
             SIG_FB=1;
 			break;
 		case 7:    //等待d,f,e结束
@@ -518,6 +552,7 @@ void to_use_fetch(int id)
 			||SIG_FB!=1||\
             SIG_forward!=1) ;//cout<<"Checking...decode"<<endl;
 			DecodeBubble();
+            Exeorder("decode_bubble");
             SIG_DB=1;  
 			break;
 		case 8:    //等待FD
@@ -528,6 +563,7 @@ void to_use_fetch(int id)
 			SIG_E!=1||SIG_D!=1||\
 			SIG_forward!=1||SIG_SET!=1) ;//cout<<"Checking...execute"<<endl;
 			ExecuteBubble(); 
+            Exeorder("execute_bubble");
             SIG_EB=1;
 			break;
 		case 9:    //需要等待MemoryBubbleSetAndLoad结束
@@ -538,6 +574,7 @@ void to_use_fetch(int id)
 				SIG_M!=1||\
                 SIG_forward!=1) ;//cout<<"Checking...write"<<endl;
 			WriteBubble();  
+            Exeorder("write_bubble");
             SIG_WB=1; 
 			break;
 		case 10:   //需要等待FD结束
@@ -548,44 +585,47 @@ void to_use_fetch(int id)
 				SIG_E!=1||SIG_M!=1||\
                 SIG_forward!=1) ;//cout<<"Checking...memory"<<endl;
 			MemoryBubble();
+            Exeorder("memory_bubble");
             SIG_MB=1; 
 			break;
 		case 11:   //等待m结束
 			while(SIG_M!=1) ;//cout<<"Checking...set_cc"<<endl;
 			set_cc_fun();
             SIG_SET=1;
+            Exeorder("set_cc");
             break;
         
         case 12: // f set
             while(SIG_FB!=1);
             FetchLoad();
+            Exeorder("fetch_load");
             break;
         case 13: // f set
             while(SIG_DB!=1);
             DecodeLoad();
+            Exeorder("decode_load");
             break;
         case 14:
             while(SIG_EB!=1);
             ExecuteLoad();
+            Exeorder("execute_load");
             break;
         case 15:
             while(SIG_MB!=1);
             MemoryLoad();
+            Exeorder("memory_load");
             break;
         case 16:
             while(SIG_WB!=1);
             WriteLoad();
+            Exeorder("write_load");
             break;
 	}
-	
 }
 void OneCycle()
 {
-	SIG_CLEAR();
-	Path.dataStore();
-    Path.memoryDataStore();
-	HANDLE threads[17];
-	
+	exe_count=0;exe_count_lock=0;
+	InitializeCriticalSection(&g_cs);
 	threads[1]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)1,0,NULL);
 	threads[2]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)2,0,NULL);
 	threads[3]=CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)to_use_fetch,(LPVOID)3,0,NULL);
@@ -815,4 +855,31 @@ void Data::memoryDataStore()
         hisMemory.push(pair<int,long long>(mreg.valA,sum));
     }
     else hisMemory.push(pair<int,long>(-1,0));
+}
+
+void GetPC()
+{
+    SIG_CLEAR();
+	Path.dataStore();
+    Path.memoryDataStore();
+	
+    //jxx
+    if(mreg.icode==JXX&&!mreg.Cnd)
+        PC=mreg.valA;
+    //ret
+    else if(wreg.icode==RET)
+        PC=wreg.valM;
+    else PC=freg.predPC;
+}
+
+void Exeorder(string s)
+{
+    // while(exe_count_lock) {cout<<"waiting..."<<endl;Sleep(10);}
+    // exe_count_lock=1;
+    // mx.lock();
+    EnterCriticalSection(&g_cs);
+    EXEORDER[++exe_count]=s;
+    LeaveCriticalSection(&g_cs);
+    // mx.unlock();
+    // exe_count_lock=0;
 }

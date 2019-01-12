@@ -2,6 +2,7 @@
 #include"y86_essence.cpp"
 #include"decoder.cpp"
 #include <stdlib.h>
+#include<mutex>
 using namespace std;
 string error[]={"AOK","AOK","HLT","ADR","INS"};
 
@@ -13,13 +14,16 @@ void BACK(){back=1;}//这个函数用来修改back的值用以回退
 int main()
 {
     L2:
+    hitcoutn_all=0;
+    misscount_all=0;
     r=0;
     PC=0;
-    cout<<"G'Day, nice to meet you! This is a y86-simulator version 1.1's terminal version produced by Runpeng Xie and Mingzhe Zhu. "<<endl;
+    cout<<"G'Day, nice to meet you!"<<endl;
+    cout<<"This is a y86-simulator version 3.0's terminal version produced by Runpeng Xie and Mingzhe Zhu. "<<endl;
     cout<<"Hope you have nice time here. Please input the location of your .yo file, and then we can start!"<<endl;
     freg.predPC=0;ZF=1;SF=0;OF=0;//初始化
-    decoder();mreg.Cnd=1;
-    
+    decoder();
+    mreg.Cnd=1;
     dreg.icode=wreg.icode=mreg.icode=ereg.icode=1;
     f.icode=d.icode=e.icode=m.icode=0;
     f.stat=dreg.stat=d.stat=e.stat=ereg.stat=m.stat=mreg.stat=wreg.stat=AOK;
@@ -28,7 +32,17 @@ int main()
     while(1)
     {
         if(back)
-        {Path.dataGet();back=0;}
+        {
+            if(r==1) 
+            {
+                cout<<"Sorry. It's dangerous. Please go ahead."<<endl;
+                back=0;
+            }
+            else{
+                Path.dataGet();
+                back=0;
+            }
+        }
         else if(flag_time_machine&&time_machine<r)
         {Path.dataGet();continue;}
         //SelectPC
@@ -40,6 +54,7 @@ int main()
             cout<<"----------------------------------------------------------"<<endl;
         }
         else{
+            GetPC();
             OneCycle();
             r++;}
         cout<<"It's the Cycle "<<r<<":"<<endl;
@@ -59,7 +74,15 @@ int main()
 
         cout<<"W: icode= "<<wreg.icode;
         printf("   valE= 0x%llx",wreg.valE);
-        cout<<"   dstE="<<wreg.dstE<<"  Stat="<<wreg.stat<<"  ValM="<<wreg.valM<<endl;
+        cout<<"   dstE="<<wreg.dstE<<"  Stat="<<wreg.stat;
+        printf("   ValM=0x%lld\n",wreg.valM);
+        cout<<"Cache Visit Status: "<<cache_word_table[WRITE_FLAG]<<endl;
+        cout<<"Hit times: "<<hitcount<<"  Miss times: "<<misscount<<endl;
+        cout<<"Execute Order(approximately):"<<endl;
+        for(int i=1;i<=16;i++)
+        {
+            cout<<i<<": "<<EXEORDER[i]<<endl;
+        }
         cout<<"----------------------------------------------------"<<endl;
         cout<<endl;
         if(Stat)
@@ -131,7 +154,11 @@ LSTACK:
     cout<<"Now is the final situation: "<<endl;
 
     cout<<"Condition code: ZF: "<<ZF<<"  "<<"SF: "<<SF<<"  "<<"OF: "<<OF<<endl;
-
+    cout<<"---------"<<endl;
+    cout<<"Cache Visit Data:"<<endl;
+    cout<<"Hit times in all: "<<hitcoutn_all<<"   Miss times in all: "<<misscount_all<<endl;
+    cout<<"Hit ratio: "<<double(hitcoutn_all)/double(hitcoutn_all+misscount_all)<<endl;
+    cout<<"---------"<<endl;
     cout<<"Now you can input a positive decimal to get the num in the memory"<<endl;
     cout<<"Or a decimal x which x>=-16&&x<0 to view a num in register,(e.g. -1 for %rax)"<<endl;
     cout<<"Put in something else to quit"<<endl;
